@@ -1,0 +1,1814 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">  
+<title>Japan 2D 🇯🇵</title>  <link rel="preconnect" href="https://fonts.googleapis.com">  
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  <style>  
+:root {  
+  --blue: #20a6d3;  
+  --green: #4aba4c;  
+  --page: #e9e8ef;  
+  --yellow: #e6ff00;  
+  --ink: #25272b;  
+}  
+  
+* {  
+  box-sizing: border-box;  
+  margin: 0;  
+  padding: 0;  
+}  
+  
+html,  
+body {  
+  width: 100%;  
+  height: 100%;  
+  overflow: hidden;  
+  overscroll-behavior: none;  
+}  
+  
+body {  
+  position: fixed;  
+  inset: 0;  
+}  
+  
+.app {  
+  width: 100%;  
+  max-width: 550px;  
+  height: 100vh;  
+  height: 100dvh;  
+  margin: 0 auto;  
+  overflow: hidden;  
+  
+  display: flex;  
+  flex-direction: column;  
+}  
+/* STATUS BAR */  
+.status {  
+  height: 54px;  
+  background: var(--blue);  
+  color: #fff;  
+  display: flex;  
+  align-items: center;  
+  justify-content: space-between;  
+  padding: 0 clamp(12px, 4vw, 28px);  
+  font-size: 15px;  
+}  
+  
+.status-right {  
+  display: flex;  
+  align-items: center;  
+  gap: 7px;  
+  font-size: 14px;  
+}  
+  
+.battery {  
+  width: 19px;  
+  height: 11px;  
+  border: 1.5px solid #fff;  
+  border-radius: 2px;  
+  position: relative;  
+  display: inline-block;  
+}  
+  
+.battery::after {  
+  content: "";  
+  position: absolute;  
+  right: -4px;  
+  top: 2px;  
+  width: 2px;  
+  height: 5px;  
+  background: #fff;  
+}  
+  
+.battery::before {  
+  content: "";  
+  position: absolute;  
+  inset: 1px 4px 1px 1px;  
+  background: #fff;  
+}  
+  
+/* HEADER */  
+/* HEADER */  
+.header {  
+  height: 55px;  
+  flex-shrink: 0;  
+  background: #D1D5DB;  
+  display: flex;  
+  align-items: center;  
+  padding: 0 clamp(12px, 4vw, 30px);  
+  gap: clamp(10px, 3.5vw, 26px);  
+  color: #25272b;  
+}  
+  
+main {  
+  flex: 1;  
+  min-height: 0;  
+  overflow: hidden;  
+  display: flex;  
+  flex-direction: column;  
+  padding: 10px 12px 40px;  
+  gap: 8px;  
+}  
+.back {  
+  font-size: 36px;  
+  line-height: 1;  
+  font-weight: 300;  
+  color: #0876a0;  
+  border: none;  
+  background: none;  
+  cursor: pointer;  
+  flex-shrink: 0;  
+}  
+  
+.brand {  
+  font-size: clamp(21px, 5.2vw, 34px);  
+  font-weight: 400;  
+  white-space: nowrap;  
+  min-width: 0;  
+  flex: 1;  
+}  
+  
+.icon-btn {  
+  width: clamp(24px, 5.5vw, 30px);  
+  height: 34px;  
+  display: grid;  
+  place-items: center;  
+  color: #073b54;  
+  background: none;  
+  border: none;  
+  padding: 0;  
+  cursor: pointer;  
+  flex-shrink: 0;  
+}  
+  
+.icon-btn svg {  
+  width: 100%;  
+  height: 30px;  
+  stroke: currentColor;  
+  fill: none;  
+  stroke-width: 2.8;  
+  stroke-linecap: round;  
+  stroke-linejoin: round;  
+}  
+  
+/* MAIN */  
+main {  
+  padding: clamp(14px, 4vw, 25px) clamp(10px, 3.5vw, 24px) 0;  
+}  
+  
+/* MAIN RESULT CARD */  
+.main-card {  
+  width: 100%;  
+  flex: 0 0 180px;  
+  min-height: 0;  
+  height: 180px;  
+  background: #D1D5DB;  
+  border: 1px solid #d6d5dc;  
+  border-radius: 22px;  
+  box-shadow: 0 2px 4px #0002;  
+  display: flex;  
+  align-items: center;  
+  flex-direction: column;  
+  padding: 6px 8px;  
+  color: #25272b;  
+    
+}  
+.loading {  
+  width: clamp(52px, 10vw, 68px);  
+  height: clamp(52px, 10vw, 68px);  
+  border-radius: 50%;  
+  background: #fff;  
+  box-shadow: 0 2px 12px #0002;  
+  display: grid;  
+  place-items: center;  
+  margin-bottom: 3px;  
+  flex-shrink: 0;  
+}  
+  
+.loading span {  
+  font-size: clamp(36px, 7vw, 48px);  
+  color: #111;  
+  line-height: 1;  
+}  
+  
+.main-number {
+  font-size: 85px;
+  line-height: 1.04;
+  font-weight: 900;
+  color: #4aba4c;
+  letter-spacing: 1px;
+  margin-top: 20px;
+}
+  
+.updated {  
+  width: 100%;  
+  font-size: clamp(12px, 4vw, 28px);  
+  margin-top: 30px;  
+  text-align: center;  
+  font-weight: 400;  
+  overflow-wrap: anywhere;  
+}  
+  
+/* RESULT GRID */  
+.results {  
+  flex: 1;  
+  min-height: 0;  
+  display: grid;  
+  grid-template-columns: repeat(2, minmax(0, 1fr));  
+  grid-template-rows: repeat(3, minmax(0, 110px));  
+  gap: 3px;  
+  margin-top: 0;  
+}  
+  
+.result-box {  
+  min-width: 0;  
+  min-height: 0;  
+  height: auto;  
+  background: #D1D5DB;  
+  border-radius: 10px;  
+  display: flex;  
+  flex-direction: column;  
+  align-items: center;  
+  justify-content: center;  
+  padding: 3px;  
+  color: #fff;  
+border-radius: 12px;  
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);  
+    
+}  
+  
+.result-top {  
+  font-size: clamp(21px, 5vw, 34px);  
+  font-weight: 700;  
+  line-height: 1.1;  
+color: #172554;  
+    
+}  
+  
+  
+.line {  
+  width: 100%;  
+  height: 2px;  
+  background: #e5e7eb;  
+  margin-top: clamp(12px, 3.5vw, 23px);  
+  flex-shrink: 0;  
+}  
+  
+.result-bottom {  
+  font-size: clamp(27px, 6.5vw, 45px);  
+  line-height: 1.1;  
+  color: #4aba4c;  
+  font-weight: 500;  
+  margin-top: clamp(14px, 3.5vw, 24px);  
+}  
+  
+/* FOOTER */  
+.footer {  
+  text-align: center;  
+  color: #9b9ba4;  
+  font-size: clamp(21px, 4.5vw, 29px);  
+  margin: clamp(25px, 5vw, 34px) 0 25px;  
+}  
+  
+/* VERY SMALL PHONES */  
+@media (max-width: 350px) {  
+  .header {  
+    height: 65px;  
+    padding: 0 10px;  
+    gap: 8px;  
+  }  
+  
+  .brand {  
+    font-size: 20px;  
+  }  
+  
+  .icon-btn {  
+    width: 23px;  
+    height: 27px;  
+  }  
+  
+  .main-number {  
+    font-size: 50px;  
+  }  
+  
+  .updated {  
+    font-size: 11px;  
+    margin-top: 8px;  
+  }  
+  
+  .result-top {  
+    font-size: 16px;  
+  }  
+  
+  .result-bottom {  
+    font-size: 22px;  
+    margin-top: 8px;  
+  }  
+}  
+/* TABLETS AND LARGE SCREENS */  
+@media (min-width: 551px) {  
+  body {  
+    padding: 0 12px;  
+  }  
+  
+  .app {  
+    box-shadow: 0 0 24px #00000012;  
+  }  
+}  
+  
+.bottom-nav {  
+  display: flex;  
+  position: fixed;  
+  bottom: 0;  
+  left: 50%;  
+  transform: translateX(-50%);  
+  width: 100%;  
+  max-width: 550px;  
+  height: 70px;  
+  background: #fff;  
+  z-index: 999;  
+}  
+.nav-item {  
+  flex: 1;  
+  height: 100%;  
+  border: none;  
+  background: transparent;  
+  display: flex;  
+  flex-direction: column;  
+  justify-content: center;  
+  align-items: center;  
+  gap: 5px;  
+  color: #718096;  
+  font-size: 14px;  
+  font-weight: 500;  
+  cursor: pointer;  
+}  
+  
+.nav-icon {  
+  font-size: 28px;  
+  line-height: 1;  
+}  
+  
+.nav-item.active {  
+  color: #15243a;  
+  font-weight: 700;  
+}  
+  
+body {  
+  padding-bottom: 90px;  
+}  
+/* PAGE SWITCH */  
+.live-page {  
+  display: none;  
+  flex: 1;  
+  min-height: 0;  
+  overflow: hidden;  
+  flex-direction: column;  
+  gap: 8px;  
+  justify-content: flex-start;  
+  padding-top: 10px;  
+}  
+  
+.live-page.active {  
+  display: flex;  
+}  
+  
+.page-title {  
+  text-align: center;  
+  font-size: 22px;  
+  font-weight: 700;  
+  color: #172554;  
+  padding: 8px 0;  
+  flex: 0 0 auto;  
+}  
+.three-d-buttons {  
+  display: flex;  
+  gap: 12px;  
+  width: 100%;  
+  margin-top: 12px;  
+}  
+  
+.three-d-btn {  
+  flex: 1;  
+  min-width: 0;  
+  padding: 17px 8px;  
+  border: none;  
+  border-radius: 12px;  
+  background: #D1D5DB;  
+  color: #172554;  
+  font-size: 16px;  
+  font-weight: 700;  
+  box-shadow: 0 3px 6px #0002;  
+}  
+  
+  
+  
+.vpn-notice {  
+  width: 100%;  
+  display: flex;  
+  justify-content: center;  
+  align-items: center;  
+  text-align: center;  
+  color: #ff0000;  
+  font-size: clamp(10px, 3.2vw, 14px);  
+  font-weight: 700;  
+  white-space: nowrap;  
+  margin: 0px auto 50px;  
+  padding: 6px 0;  
+  position: relative;  
+  left: 30;  
+}  
+.vpn-notice {  
+  position: relative;  
+  transform: translateX(100px);  
+  font-size: 18px;  
+}  
+#main-number {
+  animation: mainNumberBlink 7s linear infinite;
+}
+
+@keyframes mainNumberBlink {
+  0%, 28.56%, 35.71%, 64.27%, 71.42%, 100% {
+    opacity: 1;
+  }
+
+  28.57%, 35.70%, 64.28%, 71.41% {
+    opacity: 0;
+  }
+}
+/* HONG KONG 3D HISTORY */
+#hongkong-history {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 12px;
+  padding: 8px 2px 12px;
+}
+
+#page-3d.history-open > .page-title,
+#page-3d.history-open > .main-card,
+#page-3d.history-open > .three-d-buttons {
+  display: none;
+}
+
+#page-3d.history-open > #hongkong-history {
+  display: flex;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.history-back {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  background: #D1D5DB;
+  color: #172554;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.history-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #172554;
+}
+
+.history-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 3px 4px 12px;
+}
+
+.history-card {
+  width: 100%;
+  min-height: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.history-date {
+  color: #172554;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.history-number {
+  color: #166534;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.history-empty {
+  text-align: center;
+  color: #718096;
+  padding: 20px 8px;
+}
+body.history-mode .header {
+  display: none;
+}
+
+.results .monday-notice {
+  width: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #ff0000;
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+  margin: 8px 0 0;
+  padding: 6px 0;
+  position: static;
+  left: auto;
+  transform: none !important;
+}
+.updated {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-size: clamp(12px, 4vw, 28px);
+  margin-top: 30px;
+  text-align: center;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.update-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.update-check[hidden] {
+    display: none;
+}
+
+.update-check svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.update-check svg path {
+    fill: none;
+    stroke: #32CD32;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+/* UPDATE CHECK ALIGNMENT FIX */
+.updated {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px !important;
+  line-height: 1.2;
+  overflow: visible;
+}
+
+.update-check {
+  display: inline-block;
+  font-size: 34px;
+  line-height: 1;
+  flex-shrink: 0;
+  transform: translateY(-2px);
+}
+#main-number.result-locked {
+  animation: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+#main-number.pre-result {
+  animation: mainNumberBlink 7s linear infinite !important;
+}
+/* 2D HISTORY */
+#page-2d.history-open > .main-card,
+#page-2d.history-open > .results {
+  display: none;
+}
+
+#twoD-history {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 12px;
+  padding: 8px 2px 12px;
+}
+
+#page-2d.history-open > #twoD-history {
+  display: flex;
+}
+
+.history2d-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 4px 90px;
+  scroll-padding-bottom: 90px;
+}
+.history2d-card {
+  background: #D1D5DB;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,.15);
+  flex-shrink: 0;
+}
+
+.history2d-date {
+  text-align: center;
+  color: #172554;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.history2d-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.history2d-item {
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 3px;
+  text-align: center;
+}
+
+.history2d-time {
+  color: #172554;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.history2d-number {
+  color: #166534;
+  font-size: 27px;
+  font-weight: 700;
+  margin-top: 5px;
+}
+
+.history2d-back {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  background: #D1D5DB;
+  color: #172554;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.history2d-empty {
+  text-align: center;
+  color: #718096;
+  padding: 20px;
+}
+</style> 
+</head> 
+<body>  
+  <div class="app">    <header class="header"> 
+  <button class="back" aria-label="Back" onclick="history.back()">‹</button>  
+
+<div class="brand">Hong Kong 2D🇭🇰</div>  
+
+<button class="icon-btn" aria-label="2D History"
+  onclick="showHistory()"
+  type="button"
+  style="width:40px;font-size:22px;font-weight:900;color:#166534;">
+  2D
+</button>
+
+
+
+  </header>    <main>  
+<div id="page-2d" class="live-page active">  
+    <section class="main-card">  <div class="main-number" id="main-number">--</div>  
+
+<div class="updated">
+  <span id="update-check" class="update-check" hidden>
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M6 17 L13 24 L27 8"/>
+    </svg>
+  </span>
+  <span>Update : <span id="update-time">--:--:-- -- --</span></span>
+</div>
+</section>  
+
+<section class="results" id="results" aria-label="Result history">  
+
+  <div class="result-box">  
+    <div class="result-top">11:00AM</div>  
+    <div class="line"></div>  
+    <div class="result-bottom">??</div>  
+  </div>  
+
+  <div class="result-box">  
+    <div class="result-top">1:00PM</div>  
+    <div class="line"></div>  
+    <div class="result-bottom">??</div>  
+  </div>  
+
+  <div class="result-box">  
+    <div class="result-top">3:00PM</div>  
+    <div class="line"></div>  
+    <div class="result-bottom">??</div>  
+  </div>  
+
+  <div class="result-box">  
+    <div class="result-top">5:00PM</div>  
+    <div class="line"></div>  
+    <div class="result-bottom">??</div>  
+  </div>  
+
+  <div class="result-box">  
+    <div class="result-top">7:00PM</div>  
+    <div class="line"></div>  
+    <div class="result-bottom">??</div>  
+  </div>  
+
+  <div class="result-box">  
+    <div class="result-top">9:00PM</div>  
+    <div class="line"></div>  
+    <div class="result-bottom">??</div>  
+  </div>
+
+<div class="vpn-notice">
+  Please use VPN to view the result...
+</div>
+
+<div class="vpn-notice monday-notice">
+  Every Monday is Closed....
+</div>
+
+
+
+</section>
+<section id="twoD-history">
+
+  <div class="history-header">
+    <button class="history2d-back" onclick="close2DHistory()">
+      ‹ Back
+    </button>
+
+    <div class="history-title">Hong Kong 2D History</div>
+  </div>
+
+  <div id="twoD-history-list" class="history2d-list">
+    <div class="history2d-empty">Loading history...</div>
+  </div>
+
+</section>
+</div> 
+
+<div id="page-3d" class="live-page">  
+  <div class="page-title">3D LIVE</div>    <section class="main-card">  
+    <div class="main-number" id="main-number-3d">---</div>  <div class="updated">  
+  Update : <span id="update-time-3d">--:--:-- -- --</span>  
+</div>
+
+  </section>  
+  <div class="three-d-buttons">  
+  <button class="three-d-btn" onclick="open3D('hongkong')">  
+    Hong Kong 3D  
+  </button>    <button class="three-d-btn" onclick="open3D('thai')">  
+    Thai 3D  
+  </button>  
+</div> 
+<section id="hongkong-history">
+  <div class="history-header">
+    <button class="history-back" onclick="close3DHistory()">
+      ‹ Back
+    </button>
+    <div class="history-title">Hong Kong 3D History</div>
+  </div>
+
+  <div id="hongkong-history-list" class="history-list">
+    <div class="history-empty">Loading history...</div>
+  </div>
+</section>
+
+
+</div> 
+</main>   
+<nav class="bottom-nav">  
+    <button class="nav-item active" onclick="openLive('2d', this)">  
+      <span class="nav-icon">📈</span>  
+      <span>2D Live</span>  
+    </button>  <button class="nav-item" onclick="openLive('3d', this)">  
+  <span class="nav-icon">◇</span>  
+  <span>3D Live</span>  
+</button>
+
+  </nav>  </div>  <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-database-compat.js"></script>  <script>  
+const SLOT_MS = 7000;  
+  
+const firebaseConfig = {  
+  apiKey: "AIzaSyBHmTO8u8VyFAkU9ApOL8xwsmRgPNgs9dw",  
+  authDomain: "hongkong2d.firebaseapp.com",  
+  databaseURL: "https://hongkong2d-default-rtdb.firebaseio.com",  
+  projectId: "hongkong2d",  
+  storageBucket: "hongkong2d.firebasestorage.app",  
+  messagingSenderId: "441539540436",  
+  appId: "1:441539540436:web:b9e8a56829cf8ffabdd241"  
+};  
+  
+firebase.initializeApp(firebaseConfig);  
+  
+const database = firebase.database();  
+  
+let serverTimeOffset = 0;  
+let serverTimeReady = false;  
+let lastSlotKey = "";  
+let processingDraw = false;  
+  
+  // 2D HISTORY SERVER TIME
+let historyServerTimeAnchor = 0;
+let historyMonotonicAnchor = 0;
+
+function getHistoryServerNow() {
+  if (!serverTimeReady) return 0;
+
+  return historyServerTimeAnchor +
+    (performance.now() - historyMonotonicAnchor);
+}
+
+function getMyanmarDate() {
+  const ms = getHistoryServerNow();
+  const d = new Date(ms + 390 * 60 * 1000);
+
+  return {
+    date: `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`,
+    hour: d.getUTCHours(),
+    minute: d.getUTCMinutes(),
+    second: d.getUTCSeconds(),
+    weekday: d.getUTCDay()
+  };
+}
+  
+const drawTimes = [  
+  { label: "11:00AM", key: "1100AM", preKey: "11:00AM", seconds: 11 * 3600 },  
+  { label: "1:00PM",  key: "0100PM", preKey: "01:00PM", seconds: 13 * 3600 },  
+  { label: "3:00PM",  key: "0300PM", preKey: "03:00PM", seconds: 15 * 3600 },  
+  { label: "5:00PM",  key: "0500PM", preKey: "05:00PM", seconds: 17 * 3600 },  
+  { label: "7:00PM",  key: "0700PM", preKey: "07:00PM", seconds: 19 * 3600 },  
+  { label: "9:00PM",  key: "0900PM", preKey: "09:00PM", seconds: 21 * 3600 }  
+];  
+  
+let preResultsData = {};  
+  
+const pad = n => String(n).padStart(2, "0");  
+  
+
+function getSlotKey(t) {  
+  const slot = Math.floor(t.second / 7);  
+  
+  return `${t.date}_${pad(t.hour)}_${pad(t.minute)}_${slot}`;  
+}  
+  
+function getTwoDigit(value) {  
+  return String(value).padStart(2, "0");  
+}  
+  
+
+function updateMainNumber(value) {
+  const el = document.getElementById("main-number");
+  const check = document.getElementById("update-check");
+
+  if (!el) return;
+
+  const showCheck = status => {
+    if (check) check.hidden = !status;
+  };
+
+  showCheck(false);
+  el.classList.remove("pre-result", "result-locked");
+
+  if (!serverTimeReady) {
+    el.textContent = "--";
+    return;
+  }
+
+  const t = getMyanmarDate();
+
+  if (t.weekday === 1) {
+    el.textContent = "--";
+    return;
+  }
+
+  const secondsNow =
+    t.hour * 3600 + t.minute * 60 + t.second;
+
+  // 9:00 PM နောက်ပိုင်း Final ဂဏန်း
+  if (secondsNow >= 21 * 3600) {
+    const finalValue = preResultsData["09:00PM"];
+
+    if (
+      finalValue !== undefined &&
+      finalValue !== null &&
+      /^\d{1,2}$/.test(String(finalValue))
+    ) {
+      el.textContent = getTwoDigit(finalValue);
+      el.classList.add("result-locked");
+      showCheck(true);
+    }
+    return;
+  }
+
+  // ကြိုထည့်ချိန်မှ Result ထွက်ပြီး 10 မိနစ်အထိ
+  // ကြိုထည့်ချိန်မှ Result ထွက်ပြီး 10 မိနစ်အထိ
+for (const draw of drawTimes) {
+  const preStart = draw.seconds - 18;
+  const freezeUntil = draw.seconds + 10 * 60;
+
+  if (secondsNow >= preStart && secondsNow < freezeUntil) {
+    const resultValue = preResultsData[draw.preKey];
+
+    const validResult =
+      resultValue !== undefined &&
+      resultValue !== null &&
+      /^\d{1,2}$/.test(String(resultValue));
+
+    if (validResult) {
+      el.textContent = getTwoDigit(resultValue);
+    }
+
+    if (secondsNow < draw.seconds) {
+      // Draw မရောက်သေးခင် Animation ဆက်လှုပ်မည်
+      el.classList.add("pre-result");
+      showCheck(false);
+    } else {
+      // Draw အချိန်တိတိရောက်မှ Animation ရပ်မည်
+      el.classList.add("result-locked");
+      showCheck(validResult);
+    }
+
+    return;
+  }
+}
+  el.textContent = getTwoDigit(value);
+}
+function updateClock() {  
+  if (!serverTimeReady) return;  
+  
+  const now = getHistoryServerNow();  
+  const myanmarNow = new Date(now + 390 * 60 * 1000);  
+  
+  // 2D Update — မူလအတိုင်း 7 စက္ကန့်တစ်ကွက်  
+  const slot2D = Math.floor(myanmarNow.getUTCSeconds() / 7) * 7;  
+  const display2D = new Date(now + 390 * 60 * 1000);  
+  display2D.setUTCSeconds(slot2D, 0);  
+  
+  const formatTime = d =>  
+    `${pad(d.getUTCHours() % 12 || 12)}:` +  
+    `${pad(d.getUTCMinutes())}:` +  
+    `${pad(d.getUTCSeconds())} ` +  
+    `${d.getUTCHours() >= 12 ? "PM" : "AM"} ` +  
+    `${pad(d.getUTCDate())}-` +  
+    `${pad(d.getUTCMonth() + 1)}-` +  
+    `${d.getUTCFullYear()}`;  
+  
+  const el2d = document.getElementById("update-time");  
+  if (el2d) el2d.textContent = formatTime(display2D);  
+  
+
+
+
+  // 3D Update — ဗုဒ္ဓဟူးနေ့ ည 09:00 PM တွင် ရပ်မည်
+  const el3d = document.getElementById("update-time-3d");
+  const weekday = myanmarNow.getUTCDay();
+
+  const secondsNow =
+    myanmarNow.getUTCHours() * 3600 +
+    myanmarNow.getUTCMinutes() * 60 +
+    myanmarNow.getUTCSeconds();
+
+  const startAt = 9 * 3600;
+  const preTime = 20 * 3600 + 59 * 60 + 50;
+  const freezeAt = 21 * 3600;
+
+  if (el3d) {
+    if (weekday === 3 && secondsNow >= startAt && secondsNow < preTime) {
+      const elapsed = secondsNow - startAt;
+      const slotSeconds = Math.floor(elapsed / 10) * 10;
+
+      const display3D = new Date(myanmarNow.getTime());
+      display3D.setUTCHours(9, 0, 0, 0);
+      display3D.setTime(display3D.getTime() + slotSeconds * 1000);
+
+      el3d.textContent = formatTime(display3D);
+
+    } else if (
+      weekday === 3 &&
+      secondsNow >= preTime &&
+      secondsNow < freezeAt
+    ) {
+      const display3D = new Date(myanmarNow.getTime());
+      display3D.setUTCHours(20, 59, 50, 0);
+      el3d.textContent = formatTime(display3D);
+
+    } else if (
+      (weekday === 3 && secondsNow >= freezeAt) ||
+      weekday === 4
+    ) {
+      const frozen = new Date(myanmarNow.getTime());
+
+      if (weekday === 4) {
+        frozen.setUTCDate(frozen.getUTCDate() - 1);
+      }
+
+      frozen.setUTCHours(21, 0, 0, 0);
+      el3d.textContent = formatTime(frozen);
+
+    } else {
+      el3d.textContent = "--:--:-- -- --";
+    }
+  }
+
+
+}
+
+
+  
+/*  
+  Shared random:  
+  Slot တစ်ခုအတွက် Transaction တစ်ကြိမ်သာ  
+  အောင်မြင်သော value ကို ဖုန်းအားလုံး ပြန်သုံးမည်။  
+*/  
+
+async function loadRandomSlot() {
+  if (!serverTimeReady || processingDraw) return;
+
+  const t = getMyanmarDate();
+
+  if (t.weekday === 1) {
+    document.getElementById("main-number").textContent = "--";
+    return;
+  }
+
+  const secondsNow =
+    t.hour * 3600 + t.minute * 60 + t.second;
+
+  // ည 9:00 PM နောက်ပိုင်း Random ရပ်မည်
+  if (secondsNow >= 21 * 3600) {
+    updateMainNumber(
+      document.getElementById("main-number")?.textContent || "--"
+    );
+    return;
+  }
+
+  // Result ထွက်ပြီး 10 မိနစ်အတွင်း Random ရပ်မည်
+  // ကြိုထည့်ချိန်မှ Result ထွက်ပြီး 10 မိနစ်အထိ Random ရပ်မည်
+for (const draw of drawTimes) {
+  if (
+    secondsNow >= draw.seconds - 18 &&
+    secondsNow < draw.seconds + 10 * 60
+  ) {
+      updateMainNumber(
+        document.getElementById("main-number")?.textContent || "--"
+      );
+      return;
+    }
+  }
+
+  const slotKey = getSlotKey(t);
+
+  if (slotKey === lastSlotKey) return;
+  lastSlotKey = slotKey;
+
+  const slotRef = database.ref("randomSlots/" + slotKey);
+
+  try {
+    const result = await slotRef.transaction(current => {
+      if (current !== null) return;
+      return getTwoDigit(Math.floor(Math.random() * 100));
+    });
+
+    if (!result.snapshot.exists()) {
+      throw new Error("Random slot transaction failed");
+    }
+
+    const value = getTwoDigit(result.snapshot.val());
+
+    const latest = getMyanmarDate();
+    const latestSeconds =
+      latest.hour * 3600 + latest.minute * 60 + latest.second;
+
+    // အချိန်ကွက် ပြောင်းသွားလျှင် သို့မဟုတ် Result freeze ဖြစ်လျှင် မပြပါနှင့်
+    if (
+      getSlotKey(latest) !== slotKey ||
+      latestSeconds >= 21 * 3600 ||
+      drawTimes.some(draw =>
+  latestSeconds >= draw.seconds - 18 &&
+  latestSeconds < draw.seconds + 10 * 60
+)
+    ) {
+      return;
+    }
+
+    updateMainNumber(value);
+    await database.ref("live/number").set(value);
+
+  } catch (error) {
+    console.error("Random slot error:", error);
+    lastSlotKey = "";
+  }
+}
+
+  
+/*  
+  Draw results:  
+  အချိန်ရောက်မှ သတ်မှတ်ရက်၏ result ကို  
+  Transaction နဲ့ တစ်ကြိမ်သာ ဖန်တီးမည်။  
+*/  
+  
+async function processDraws() {  
+  if (!serverTimeReady) return;  
+  
+  const t = getMyanmarDate();  
+  
+  if (t.weekday === 1) {  
+    renderResults(t.date, {});  
+    return;  
+  }  
+  
+  const secondsNow =  
+    t.hour * 3600 + t.minute * 60 + t.second;  
+  
+  const results = {};  
+  
+  drawTimes.forEach(draw => {  
+    if (secondsNow >= draw.seconds) {  
+      const value = preResultsData[draw.preKey];  
+  
+      results[draw.key] =  
+        value !== undefined &&  
+        value !== null &&  
+        /^\d{1,2}$/.test(String(value))  
+          ? getTwoDigit(value)  
+          : "";  
+    } else {  
+      results[draw.key] = "";  
+    }  
+  });  
+  
+  renderResults(t.date, results);  
+}  
+function renderResults(date, results) {  
+  const boxes = document.querySelectorAll("#results .result-box");  
+  
+  drawTimes.forEach((draw, index) => {  
+    const box = boxes[index];  
+    if (!box) return;  
+  
+    const resultEl = box.querySelector(".result-bottom");  
+    if (!resultEl) return;  
+  
+    resultEl.textContent =  
+      results[draw.key] !== undefined && results[draw.key] !== ""  
+        ? getTwoDigit(results[draw.key])  
+        : "??";  
+  });  
+}  
+  
+async function loadTodayResults() {  
+  if (!serverTimeReady) return;  
+  
+  const t = getMyanmarDate();  
+   if (t.weekday === 1) {  
+  renderResults(t.date, {});  
+  return;  
+}  
+    
+  try {  
+    const snapshot = await database  
+      .ref(`results/${t.date}`)  
+      .once("value");  
+  
+    renderResults(t.date, snapshot.val() || {});  
+  } catch (error) {  
+    console.error("Load results error:", error);  
+  }  
+}  
+/*  
+  Firebase Server Time Offset  
+*/  
+database.ref(".info/serverTimeOffset").on("value", snapshot => {
+  serverTimeOffset = Number(snapshot.val() || 0);
+  serverTimeReady = true;
+
+  // Firebase Server Time ကို Monotonic Clock နဲ့ ချိတ်မည်
+  historyServerTimeAnchor = Date.now() + serverTimeOffset;
+  historyMonotonicAnchor = performance.now();
+  
+  updateClock();
+loadRandomSlot();
+loadTodayResults();
+processDraws();
+process2DHistory();
+});
+  
+/*  
+  Live listener: ဖုန်းအားလုံးမှာ တူညီတဲ့ဂဏန်းကို ဖတ်မည်။  
+*/  
+database.ref("live/number").on("value", snapshot => {  
+  const value = snapshot.val();  
+  if (value !== null && value !== undefined) {  
+    updateMainNumber(value);  
+  }  
+});  
+database.ref("preResults").on("value", snapshot => {
+  preResultsData = snapshot.val() || {};
+
+  const currentValue =
+    document.getElementById("main-number")?.textContent || "--";
+
+  updateMainNumber(currentValue);
+  processDraws();
+
+  // preResults ပြောင်းလဲတိုင်း History ကို ပြန်စစ်မည်
+  process2DHistory();
+});
+/*  
+  Result ပြောင်းလဲလာလျှင် ဖုန်းအားလုံးတွင် အလိုအလျောက်ပြမည်။  
+*/  
+database.ref("results").on("value", snapshot => {  
+  if (!serverTimeReady) return;  
+  processDraws();  
+});  
+  
+/*  
+  UI navigation  
+*/  
+function showCalendar() {  
+  alert("Calendar");  
+}  
+  
+/* ===== 2D AUTO HISTORY SYSTEM ===== */
+
+const history2DTimes = [
+  "11:00 AM",
+  "1:00 PM",
+  "3:00 PM",
+  "5:00 PM",
+  "7:00 PM",
+  "9:00 PM"
+];
+
+let history2DInitializedDate = "";
+let history2DProcessing = false;
+let history2DListenerAttached = false;
+
+
+// Server Time ဖြင့် History သိမ်းမည်
+async function process2DHistory() {
+  if (!serverTimeReady || history2DProcessing) return;
+
+  const t = getMyanmarDate();
+  if (t.weekday === 1) return;
+
+  history2DProcessing = true;
+
+  try {
+    const historyRef = database.ref("history2D");
+
+    // ဒီနေ့ History မရှိသေးလျှင်သာ ဖန်တီးမည်
+    if (history2DInitializedDate !== t.date) {
+
+      await historyRef.child(t.date).transaction(current => {
+        if (current !== null) return current;
+        return {};
+      });
+
+      history2DInitializedDate = t.date;
+    }
+
+    const secondsNow =
+      t.hour * 3600 +
+      t.minute * 60 +
+      t.second;
+
+    for (let index = 0; index < drawTimes.length; index++) {
+
+      const draw = drawTimes[index];
+
+      // သတ်မှတ်ချိန် မရောက်သေးရင် မသိမ်းပါ
+      if (secondsNow < draw.seconds) continue;
+
+      const value = preResultsData[draw.preKey];
+
+      if (
+        value === undefined ||
+        value === null ||
+        !/^\d{1,2}$/.test(String(value))
+      ) continue;
+
+      const finalValue = getTwoDigit(value);
+
+      const resultRef = historyRef
+        .child(t.date)
+        .child(String(index));
+
+      const saved = await resultRef.transaction(current => {
+        // ရှိပြီးသားဂဏန်းကို မပြောင်းပါ
+        if (current !== null) return current;
+
+        return finalValue;
+      });
+
+      console.log(
+        "2D History:",
+        draw.label,
+        finalValue,
+        saved.committed
+      );
+    }
+
+  } catch (error) {
+    console.error("2D Auto History Error:", error);
+  } finally {
+    history2DProcessing = false;
+  }
+}
+
+// 2D History ဖွင့်မည်
+async function showHistory() {
+  const page = document.getElementById("page-2d");
+
+  page.classList.add("history-open");
+  document.body.classList.add("history-mode");
+
+  const list = document.getElementById("twoD-history-list");
+
+  list.innerHTML =
+    '<div class="history2d-empty">Loading history...</div>';
+
+  if (!serverTimeReady) {
+    list.innerHTML =
+      '<div class="history2d-empty">Server time မရသေးပါ။</div>';
+    return;
+  }
+
+  // Firebase Realtime Listener တစ်ကြိမ်သာ ချိတ်မည်
+  if (!history2DListenerAttached) {
+    history2DListenerAttached = true;
+
+    database.ref("history2D").on("value", snapshot => {
+      render2DHistory(snapshot.val() || {});
+    });
+  }
+
+  await process2DHistory();
+}
+
+
+function close2DHistory() {
+  document.getElementById("page-2d")
+    .classList.remove("history-open");
+
+  document.body.classList.remove("history-mode");
+}
+
+
+// History Card များ ပြမည်
+function render2DHistory(data) {
+  const list = document.getElementById("twoD-history-list");
+
+  if (!list) return;
+
+  const entries = Object.entries(data)
+    .filter(([date, values]) =>
+      /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+      new Date(date + "T00:00:00Z").getUTCDay() !== 1 &&
+      values &&
+      typeof values === "object"
+    )
+    .sort(([a], [b]) => b.localeCompare(a));
+
+  list.replaceChildren();
+
+  if (!entries.length) {
+    list.innerHTML =
+      '<div class="history2d-empty">History မရှိသေးပါ။</div>';
+    return;
+  }
+
+  for (const [date, values] of entries) {
+
+    const card = document.createElement("div");
+    card.className = "history2d-card";
+
+    const dateEl = document.createElement("div");
+    dateEl.className = "history2d-date";
+    dateEl.textContent = date;
+
+    const grid = document.createElement("div");
+    grid.className = "history2d-grid";
+
+    history2DTimes.forEach((time, index) => {
+
+      const item = document.createElement("div");
+      item.className = "history2d-item";
+
+      const timeEl = document.createElement("div");
+      timeEl.className = "history2d-time";
+      timeEl.textContent = time;
+
+      const numberEl = document.createElement("div");
+      numberEl.className = "history2d-number";
+
+      const value = values[index];
+
+      numberEl.textContent =
+        value !== undefined &&
+        /^\d{1,2}$/.test(String(value))
+          ? String(value).padStart(2, "0")
+          : "??";
+
+      item.append(timeEl, numberEl);
+      grid.appendChild(item);
+    });
+
+    card.append(dateEl, grid);
+    list.appendChild(card);
+  }
+}
+function openLive(type, button) {  
+  document.querySelectorAll(".live-page").forEach(page => {  
+    page.classList.remove("active");  
+  });  
+  
+  const target = document.getElementById("page-" + type);  
+  if (target) target.classList.add("active");  
+  
+  document.querySelectorAll(".nav-item").forEach(btn => {  
+    btn.classList.remove("active");  
+  });  
+  
+  if (button) button.classList.add("active");  
+}  
+  
+const initial3DHistory = {
+  "2026-10-28": "291",
+  "2026-10-21": "563",
+  "2026-10-14": "109",
+  "2026-10-07": "436",
+  "2026-09-30": "782",
+  "2026-09-23": "048",
+  "2026-09-16": "615",
+  "2026-09-09": "970",
+  "2026-09-02": "324",
+  "2026-08-26": "856",
+  "2026-08-19": "193",
+  "2026-08-12": "508",
+  "2026-08-05": "741",
+  "2026-07-29": "062",
+  "2026-07-22": "395",
+  "2026-07-15": "827",
+  "2026-07-08": "014",
+  "2026-07-01": "679",
+  "2026-06-24": "230",
+  "2026-06-17": "451",
+  "2026-06-10": "894",
+  "2026-06-03": "168",
+  "2026-05-27": "705",
+  "2026-05-20": "342",
+  "2026-05-13": "916",
+  "2026-05-06": "027",
+  "2026-04-29": "583"
+};
+
+let history3DListenerAttached = false;
+
+async function open3D(type) {
+  if (type !== "hongkong") {
+    alert("Thai 3D");
+    return;
+  }
+
+  const page = document.getElementById("page-3d");
+  page.classList.add("history-open");
+document.body.classList.add("history-mode");
+
+  try {
+    // မရှိသေးတဲ့ရက်တွေကိုသာ ထည့်မည်၊ ရှိပြီးသားကို မပြင်ပါ
+    await database.ref("results3D").transaction(current => {
+      const data = current && typeof current === "object"
+        ? { ...current }
+        : {};
+
+      for (const [date, number] of Object.entries(initial3DHistory)) {
+        if (data[date] === undefined || data[date] === null) {
+          data[date] = number;
+        }
+      }
+
+      return data;
+    });
+
+    if (!history3DListenerAttached) {
+      history3DListenerAttached = true;
+
+      database.ref("results3D").on("value", snapshot => {
+        renderHongKong3DHistory(snapshot.val() || {});
+      });
+    }
+  } catch (error) {
+    console.error("3D history load error:", error);
+
+    document.getElementById("hongkong-history-list").innerHTML =
+      '<div class="history-empty">History ဖတ်မရပါ။ Firebase Rules ကို စစ်ဆေးပါ။</div>';
+  }
+}
+
+function close3DHistory() {
+  document.getElementById("page-3d").classList.remove("history-open");
+  document.body.classList.remove("history-mode");
+}
+
+function renderHongKong3DHistory(data) {
+  const list = document.getElementById("hongkong-history-list");
+  if (!list) return;
+
+  const entries = Object.entries(data)
+    .filter(([date, value]) =>
+      /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+      /^\d{1,3}$/.test(String(value))
+    )
+    .sort(([dateA], [dateB]) => dateB.localeCompare(dateA));
+
+  if (!entries.length) {
+    list.innerHTML = '<div class="history-empty">History မရှိသေးပါ။</div>';
+    return;
+  }
+
+  list.replaceChildren();
+
+  for (const [date, value] of entries) {
+    const card = document.createElement("div");
+    card.className = "history-card";
+
+    const dateEl = document.createElement("span");
+    dateEl.className = "history-date";
+
+    const [year, month, day] = date.split("-");
+    dateEl.textContent = `${day}-${month}-${year}`;
+
+    const numberEl = document.createElement("span");
+    numberEl.className = "history-number";
+    numberEl.textContent = String(value).padStart(3, "0");
+
+    card.append(dateEl, numberEl);
+    list.appendChild(card);
+  }
+}
+  
+setInterval(() => {
+  updateClock();
+  loadRandomSlot();
+  processDraws();
+  process2DHistory();
+}, 1000);
+  
+  
+  
+/* ===== 3D RANDOM SYSTEM + PRECISE ANIMATION ===== */  
+  
+const SLOT_3D_MS = 10000;  
+let lastSlot3D = "";  
+let current3DValue = "";  
+let processing3D = false;  
+  
+function getWednesday3DTime() {  
+  const now = getHistoryServerNow();
+  const d = new Date(now + 390 * 60 * 1000);  
+  
+  return {  
+    date: `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`,  
+    weekday: d.getUTCDay(),  
+    milliseconds:  
+      ((d.getUTCHours() * 60 + d.getUTCMinutes()) * 60 +  
+      d.getUTCSeconds()) * 1000 + d.getUTCMilliseconds()  
+  };  
+}  
+  
+function display3DNumber(value, phaseMs) {  
+  const el = document.getElementById("main-number-3d");  
+  if (!el) return;  
+  
+  el.textContent = String(value).padStart(3, "0");  
+  
+  // 0–4s ပေါ်၊ 4–5s ပျောက်၊  
+  // 5–9s ပြန်ပေါ်၊ 9–10s ပျောက်  
+  const visible =  
+    (phaseMs < 4000) ||  
+    (phaseMs >= 5000 && phaseMs < 9000);  
+  
+  el.style.visibility = visible ? "visible" : "hidden";  
+}  
+  
+function show3DFinal(value) {  
+  const el = document.getElementById("main-number-3d");  
+  if (!el) return;  
+  
+  el.textContent = String(value).padStart(3, "0");  
+  el.style.visibility = "visible";  
+}  
+  
+async function update3DRandom() {  
+  const el = document.getElementById("main-number-3d");  
+  
+  if (!el || !serverTimeReady || processing3D) return;  
+  
+  const t = getWednesday3DTime();  
+  const startMs = 9 * 3600 * 1000;
+const preTimeMs = (20 * 3600 + 59 * 60 + 50) * 1000;
+const finalTimeMs = 21 * 3600 * 1000;
+  // ဗုဒ္ဓဟူးနေ့မဟုတ်ရင် နောက်ဆုံးထွက်ဂဏန်းကို ဆက်ပြမည်  
+// ကြာသပတေးနေ့တွင် ဗုဒ္ဓဟူးနေ့၏ Final Number ကို ဆက်ပြမည်
+if (t.weekday === 4) {
+  const savedDate = t.date;
+
+  const previousWednesday = new Date(
+    Date.UTC(
+      Number(savedDate.slice(0, 4)),
+      Number(savedDate.slice(5, 7)) - 1,
+      Number(savedDate.slice(8, 10))
+    )
+  );
+
+  previousWednesday.setUTCDate(
+    previousWednesday.getUTCDate() - 1
+  );
+
+  const y = previousWednesday.getUTCFullYear();
+  const m = pad(previousWednesday.getUTCMonth() + 1);
+  const d = pad(previousWednesday.getUTCDate());
+  const resultDate = `${y}-${m}-${d}`;
+
+  const savedResult = await database
+    .ref("results3D/" + resultDate)
+    .once("value");
+
+  if (savedResult.exists()) {
+    show3DFinal(savedResult.val());
+  } else {
+    el.textContent = "---";
+    el.style.visibility = "visible";
+  }
+
+  return;
+}
+
+// သောကြာနေ့မှ အင်္ဂါနေ့အထိ ---
+if (t.weekday !== 3) {
+  el.textContent = "---";
+  el.style.visibility = "visible";
+  return;
+}
+  
+  if (t.milliseconds < startMs) {  
+    el.textContent = "---";  
+    el.style.visibility = "visible";  
+    return;  
+  }  
+  
+  processing3D = true;  
+  
+  try {  
+    // 8:59:50 PM မှ 9:00 PM မတိုင်ခင် ကြိုထည့်ဂဏန်းကိုသာ ပြမည်
+if (
+  t.milliseconds >= preTimeMs &&
+  t.milliseconds < finalTimeMs
+) {
+  const preSnapshot = await database.ref("preResults3D").once("value");
+  const preValue = preSnapshot.val();
+
+  if (
+    preValue !== null &&
+    preValue !== undefined &&
+    /^\d{1,3}$/.test(String(preValue))
+  ) {
+    show3DFinal(String(preValue).padStart(3, "0"));
+  } else {
+    el.textContent = "---";
+    el.style.visibility = "visible";
+  }
+
+  return;
+}
+
+// ည 9:00 PM ရောက်မှ results3D ထဲ အတည်ပြုသိမ်းမည်
+if (t.milliseconds >= finalTimeMs) {
+  const preSnapshot = await database.ref("preResults3D").once("value");
+  const preValue = preSnapshot.val();
+
+  if (
+    preValue === null ||
+    preValue === undefined ||
+    !/^\d{1,3}$/.test(String(preValue))
+  ) {
+    el.textContent = "---";
+    el.style.visibility = "visible";
+    return;
+  }
+
+  const finalValue = String(preValue).padStart(3, "0");
+  const finalRef = database.ref("results3D/" + t.date);
+
+  const finalResult = await finalRef.transaction(current => {
+    if (current !== null) return current;
+    return finalValue;
+  });
+
+  if (finalResult.snapshot.exists()) {
+    show3DFinal(finalResult.snapshot.val());
+  }
+
+  return;
+}
+  
+    const elapsedMs = t.milliseconds - startMs;  
+    const slot = Math.floor(elapsedMs / SLOT_3D_MS);  
+    const slotKey = `${t.date}_${slot}`;  
+  
+    if (slotKey !== lastSlot3D || !current3DValue) {  
+      const randomRef = database.ref("randomSlots3D/" + slotKey);  
+  
+      const randomResult = await randomRef.transaction(current => {  
+        if (current !== null) return current;  
+  
+        return String(  
+          Math.floor(Math.random() * 1000)  
+        ).padStart(3, "0");  
+      });  
+  
+      if (!randomResult.snapshot.exists()) return;  
+  
+      current3DValue = String(randomResult.snapshot.val()).padStart(3, "0");  
+      lastSlot3D = slotKey;  
+    }  
+  
+    const latest = getWednesday3DTime();  
+  
+    if (  
+      latest.weekday !== 3 ||  
+      latest.date !== t.date ||  
+      latest.milliseconds < startMs ||  
+      latest.milliseconds >= preTimeMs ||  
+      Math.floor((latest.milliseconds - startMs) / SLOT_3D_MS) !== slot  
+    ) {  
+      return;  
+    }  
+  
+    const latestElapsedMs = latest.milliseconds - startMs;  
+    const phaseMs = latestElapsedMs % SLOT_3D_MS;  
+  
+    display3DNumber(current3DValue, phaseMs);  
+  
+  } catch (error) {  
+    console.error("3D random error:", error);  
+  } finally {  
+    processing3D = false;  
+  }  
+}  
+  
+// 100ms တစ်ကြိမ်စစ်၍ ပျောက်/ပေါ်ချိန် ပိုတိကျစေမည်  
+setInterval(update3DRandom, 100);  
+update3DRandom();  
+  
+</script> 
+</body>  
+  </html>
