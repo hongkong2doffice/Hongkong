@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HongKong 2D / 3D Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #e9e8ef;
+  --card: #ffffff;
+  --panel: #d1d5db;
+  --navy: #172554;
+  --green: #166534;
+  --red: #dc2626;
+  --blue: #0876a0;
+  --ink: #25272b;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Roboto', sans-serif;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 12px 12px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.topbar {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.topbar h1 {
+  font-size: clamp(17px, 4.8vw, 21px);
+  font-weight: 900;
+  color: var(--navy);
+}
+
+.clock-pill {
+  background: var(--card);
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tab-btn {
+  padding: 10px 8px;
+  border: none;
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tab-btn.active {
+  background: var(--navy);
+  color: #ffffff;
+}
+
+.section {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section.active {
+  display: flex;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sub-note {
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.35;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+input[type="text"],
+input[type="date"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
+  background: #f8fafc;
+  outline: none;
+  text-align: center;
+}
+
+input[type="date"] {
+  font-size: 14px;
+  color: var(--ink);
+  text-align: left;
+}
+
+input:focus {
+  border-color: var(--blue);
+  background: #ffffff;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  flex: 1;
+  min-width: 110px;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--green);
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background: var(--panel);
+  color: var(--navy);
+}
+
+.btn-danger {
+  background: var(--red);
+  color: #ffffff;
+}
+
+.history-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.history-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.history-date-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.history-val-label {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--green);
+  letter-spacing: 1.5px;
+}
+
+.mini-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.mini-btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(14px);
+  background: var(--navy);
+  color: #ffffff;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>HK 2D / 3D Admin</h1>
+      <div class="clock-pill" id="mm-clock">Loading...</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-pre2d" onclick="switchTab('pre2d', this)">2D Pre</button>
+      <button class="tab-btn" id="tab-hist2d" onclick="switchTab('hist2d', this)">2D History</button>
+      <button class="tab-btn" id="tab-3d" onclick="switchTab('3d', this)">3D Control</button>
+    </div>
+
+    <!-- 2D PRE RESULTS -->
+    <section class="section active" id="sec-pre2d">
+      <div class="card">
+        <div class="card-title">
+          <span>2D Pre-Results (`preResults`)</span>
+        </div>
+        <div class="sub-note">
+          00–99 ဂဏန်းထည့်ပါ။ Save နှိပ်ရင် `preResults` မှာ သိမ်းပြီး `live/number` ကိုလည်း နောက်ဆုံးရရှိတဲ့ ဂဏန်းနဲ့ ညှိပေးပါမယ်။
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="pre-1100AM">11:00 AM</label>
+            <input type="text" id="pre-1100AM" maxlength="2" inputmode="numeric" placeholder="--">
+          </div>
+          <div class="field">
+            <label for="pre-0100PM">1:00 PM</label>
+            <input type="text" id="pre-0100PM" maxlength="2" inputmode="numeric" placeholder="--">
+          </div>
+          <div class="field">
+            <label for="pre-0300PM">3:00 PM</label>
+            <input type="text" id="pre-0300PM" maxlength="2" inputmode="numeric" placeholder="--">
+          </div>
+          <div class="field">
+            <label for="pre-0500PM">5:00 PM</label>
+            <input type="text" id="pre-0500PM" maxlength="2" inputmode="numeric" placeholder="--">
+          </div>
+          <div class="field">
+            <label for="pre-0700PM">7:00 PM</label>
+            <input type="text" id="pre-0700PM" maxlength="2" inputmode="numeric" placeholder="--">
+          </div>
+          <div class="field">
+            <label for="pre-0900PM">9:00 PM</label>
+            <input type="text" id="pre-0900PM" maxlength="2" inputmode="numeric" placeholder="--">
+          </div>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn btn-primary" onclick="savePreResults()">Save Pre-Results</button>
+          <button class="btn btn-secondary" onclick="clearPreResultsInputs()">Clear Inputs</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2D HISTORY EDITOR -->
+    <section class="section" id="sec-hist2d">
+      <div class="card">
+        <div class="card-title">
+          <span>2D History Editor (`history2D`)</span>
+        </div>
+        <div class="sub-note">
+          2026-11-03 မှ 2026-11-24 (5:00 PM ထိ) တနင်္လာနေ့များ ဖယ်ပြီး random ဂဏန်းများထည့်ရန် ခလုတ်ကို နှိပ်နိုင်ပါသည်။
+        </div>
+
+        <div class="row-actions">
+          <button class="btn btn-primary" onclick="seedRandom2DHistoryRange()">Fill 03-11-2026 to Today 5PM (No Mon)</button>
+        </div>
+
+        <div class="field">
+          <label for="hist2d-date">Date (YYYY-MM-DD)</label>
+          <input type="date" id="hist2d-date" onchange="load2DHistoryForDate(this.value)">
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="h2d-0">11:00 AM</label>
+            <input type="text" id="h2d-0" maxlength="2" inputmode="numeric" placeholder="??">
+          </div>
+          <div class="field">
+            <label for="h2d-1">1:00 PM</label>
+            <input type="text" id="h2d-1" maxlength="2" inputmode="numeric" placeholder="??">
+          </div>
+          <div class="field">
+            <label for="h2d-2">3:00 PM</label>
+            <input type="text" id="h2d-2" maxlength="2" inputmode="numeric" placeholder="??">
+          </div>
+          <div class="field">
+            <label for="h2d-3">5:00 PM</label>
+            <input type="text" id="h2d-3" maxlength="2" inputmode="numeric" placeholder="??">
+          </div>
+          <div class="field">
+            <label for="h2d-4">7:00 PM</label>
+            <input type="text" id="h2d-4" maxlength="2" inputmode="numeric" placeholder="??">
+          </div>
+          <div class="field">
+            <label for="h2d-5">9:00 PM</label>
+            <input type="text" id="h2d-5" maxlength="2" inputmode="numeric" placeholder="??">
+          </div>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn btn-primary" onclick="save2DHistoryDate()">Save Day History</button>
+          <button class="btn btn-danger" onclick="delete2DHistoryDate()">Delete Day</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Saved 2D Dates</span>
+        </div>
+        <div id="hist2d-dates-list" class="sub-note">Loading...</div>
+      </div>
+    </section>
+
+    <!-- 3D CONTROL -->
+    <section class="section" id="sec-3d">
+      <div class="card">
+        <div class="card-title">
+          <span>3D Pre-Result (`preResults3D`)</span>
+        </div>
+        <div class="sub-note">
+          3 ဂဏန်း (000–999) ထည့်ပါ။ Wednesday ည 8:59:50 / 9:00 PM အတွက် အသုံးပြုပါမယ်။
+        </div>
+        <div class="field">
+          <label for="pre-3d-input">3D Number (000–999)</label>
+          <input type="text" id="pre-3d-input" maxlength="3" inputmode="numeric" placeholder="---">
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-primary" onclick="savePre3D()">Save 3D Pre-Result</button>
+          <button class="btn btn-danger" onclick="clearPre3D()">Clear `preResults3D`</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Add / Edit 3D History (`results3D`)</span>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="r3d-date">Draw Date</label>
+            <input type="date" id="r3d-date">
+          </div>
+          <div class="field">
+            <label for="r3d-number">3D Number</label>
+            <input type="text" id="r3d-number" maxlength="3" inputmode="numeric" placeholder="000">
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-primary" onclick="save3DHistoryEntry()">Save 3D History</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>3D History List</span>
+        </div>
+        <div id="results3d-list">Loading...</div>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHmTO8u8VyFAkU9ApOL8xwsmRgPNgs9dw",
+      authDomain: "hongkong2d.firebaseapp.com",
+      databaseURL: "https://hongkong2d-default-rtdb.firebaseio.com",
+      projectId: "hongkong2d",
+      storageBucket: "hongkong2d.firebasestorage.app",
+      messagingSenderId: "441539540436",
+      appId: "1:441539540436:web:b9e8a56829cf8ffabdd241"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const pad = n => String(n).padStart(2, "0");
+    const fmt2 = v => String(v).padStart(2, "0");
+    const fmt3 = v => String(v).padStart(3, "0");
+    const valid2 = v => /^\d{1,2}$/.test(String(v || "").trim());
+    const valid3 = v => /^\d{1,3}$/.test(String(v || "").trim());
+    const rand2 = () => fmt2(Math.floor(Math.random() * 100));
+
+    const preKeys = ["11:00AM", "01:00PM", "03:00PM", "05:00PM", "07:00PM", "09:00PM"];
+    const slotHours = [11, 13, 15, 17, 19, 21];
+    let serverOffset = 0;
+    let history2DCache = {};
+    let results3DCache = {};
+    let toastTimer = null;
+
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
+    }
+
+    function getMMNow() {
+      const now = Date.now() + serverOffset;
+      const d = new Date(now + 390 * 60 * 1000);
+      return {
+        date: `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`,
+        hour: d.getUTCHours(),
+        minute: d.getUTCMinutes(),
+        second: d.getUTCSeconds(),
+        weekday: d.getUTCDay(),
+        text: `${pad(d.getUTCHours() % 12 || 12)}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())} ${d.getUTCHours() >= 12 ? "PM" : "AM"}`
+      };
+    }
+
+    function updateClock() {
+      const mm = getMMNow();
+      const el = document.getElementById("mm-clock");
+      if (el) el.textContent = `${mm.date} · ${mm.text}`;
+    }
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      document.getElementById("sec-" + tab)?.classList.add("active");
+    }
+
+    function clearPreResultsInputs() {
+      preKeys.forEach(k => {
+        const inp = document.getElementById("pre-" + k.replace(":", ""));
+        if (inp) inp.value = "";
+      });
+    }
+
+    async function savePreResults() {
+      const payload = {};
+      let latestValid = "";
+
+      for (const k of preKeys) {
+        const id = "pre-" + k.replace(":", "");
+        const raw = document.getElementById(id)?.value.trim() || "";
+        if (raw === "") {
+          payload[k] = "";
+        } else if (valid2(raw)) {
+          const val = fmt2(raw);
+          payload[k] = val;
+          latestValid = val;
+        } else {
+          showToast(`${k} ဂဏန်း 00–99 ထည့်ပါ`);
+          return;
+        }
+      }
+
+      try {
+        await database.ref("preResults").set(payload);
+        if (latestValid) {
+          await database.ref("live/number").set(latestValid);
+        }
+        showToast("2D Pre-Results သိမ်းပြီးပါပြီ");
+      } catch (e) {
+        console.error(e);
+        showToast("သိမ်းမရပါ။ Rules စစ်ဆေးပါ");
+      }
+    }
+
+    async function seedRandom2DHistoryRange() {
+      const mm = getMMNow();
+      const startDate = new Date("2026-11-03T00:00:00Z");
+      const endDateStr = mm.date >= "2026-11-24" ? mm.date : "2026-11-24";
+      const endDate = new Date(endDateStr + "T00:00:00Z");
+      const nowMinutes = mm.hour * 60 + mm.minute;
+
+      const updates = {};
+      let dayCount = 0;
+
+      for (let d = new Date(startDate); d <= endDate; d.setUTCDate(d.getUTCDate() + 1)) {
+        const weekday = d.getUTCDay();
+        if (weekday === 1) continue; // တနင်္လာနေ့ ဖယ်မယ်
+
+        const dateStr = `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+        const existing = history2DCache[dateStr] || {};
+        const dayObj = {};
+
+        for (let i = 0; i < slotHours.length; i++) {
+          const slotMinutes = slotHours[i] * 60;
+          const isPastOrCurrent =
+            dateStr < mm.date || (dateStr === mm.date && nowMinutes >= slotMinutes);
+
+          if (isPastOrCurrent) {
+            const curVal = existing[i] ?? existing[String(i)];
+            dayObj[i] = valid2(curVal) ? fmt2(curVal) : rand2();
+          } else {
+            dayObj[i] = "";
+          }
+        }
+
+        updates[dateStr] = dayObj;
+        dayCount++;
+      }
+
+      try {
+        await database.ref("history2D").update(updates);
+        const curDate = document.getElementById("hist2d-date")?.value;
+        if (curDate) load2DHistoryForDate(curDate);
+        showToast(`${dayCount} ရက်စာ Random History ထည့်ပြီးပါပြီ`);
+      } catch (e) {
+        console.error(e);
+        showToast("History ထည့်မရပါ။ Rules စစ်ဆေးပါ");
+      }
+    }
+
+    function load2DHistoryForDate(dateStr) {
+      if (!dateStr) return;
+      const dayObj = history2DCache[dateStr] || {};
+      for (let i = 0; i < 6; i++) {
+        const inp = document.getElementById("h2d-" + i);
+        if (!inp) continue;
+        const v = dayObj[i] ?? dayObj[String(i)];
+        inp.value = valid2(v) ? fmt2(v) : "";
+      }
+    }
+
+    async function save2DHistoryDate() {
+      const dateStr = document.getElementById("hist2d-date")?.value.trim();
+      if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        showToast("နေ့စွဲရွေးပါ");
+        return;
+      }
+      if (new Date(dateStr + "T00:00:00Z").getUTCDay() === 1) {
+        showToast("Monday နေ့များ 2D History မသိမ်းပါ");
+        return;
+      }
+
+      const dayData = {};
+      for (let i = 0; i < 6; i++) {
+        const raw = document.getElementById("h2d-" + i)?.value.trim() || "";
+        if (raw === "") {
+          dayData[i] = "";
+        } else if (valid2(raw)) {
+          dayData[i] = fmt2(raw);
+        } else {
+          showToast(`Slot ${i + 1} ဂဏန်း 00–99 ထည့်ပါ`);
+          return;
+        }
+      }
+
+      try {
+        await database.ref("history2D/" + dateStr).set(dayData);
+        showToast(`${dateStr} History သိမ်းပြီးပါပြီ`);
+      } catch (e) {
+        console.error(e);
+        showToast("သိမ်းမရပါ");
+      }
+    }
+
+    async function delete2DHistoryDate() {
+      const dateStr = document.getElementById("hist2d-date")?.value.trim();
+      if (!dateStr) return;
+      try {
+        await database.ref("history2D/" + dateStr).remove();
+        load2DHistoryForDate(dateStr);
+        showToast(`${dateStr} ဖျက်ပြီးပါပြီ`);
+      } catch (e) {
+        console.error(e);
+        showToast("ဖျက်မရပါ");
+      }
+    }
+
+    function render2DDatesList(data) {
+      const list = document.getElementById("hist2d-dates-list");
+      if (!list) return;
+      const dates = Object.keys(data || {})
+        .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d) && new Date(d + "T00:00:00Z").getUTCDay() !== 1)
+        .sort((a, b) => b.localeCompare(a));
+
+      if (!dates.length) {
+        list.innerHTML = "History နေ့စွဲ မရှိသေးပါ။";
+        return;
+      }
+
+      list.innerHTML = dates.map(d =>
+        `<div class="history-item">
+          <span class="history-date-label">${d}</span>
+          <button class="mini-btn btn-secondary" onclick="select2DDate('${d}')">Edit</button>
+        </div>`
+      ).join("");
+    }
+
+    function select2DDate(d) {
+      const inp = document.getElementById("hist2d-date");
+      if (inp) {
+        inp.value = d;
+        load2DHistoryForDate(d);
+      }
+    }
+
+    async function savePre3D() {
+      const raw = document.getElementById("pre-3d-input")?.value.trim() || "";
+      if (!valid3(raw)) {
+        showToast("000–999 ဂဏန်းထည့်ပါ");
+        return;
+      }
+      try {
+        await database.ref("preResults3D").set(fmt3(raw));
+        showToast("3D Pre-Result သိမ်းပြီးပါပြီ");
+      } catch (e) {
+        console.error(e);
+        showToast("သိမ်းမရပါ");
+      }
+    }
+
+    async function clearPre3D() {
+      try {
+        await database.ref("preResults3D").remove();
+        document.getElementById("pre-3d-input").value = "";
+        showToast("`preResults3D` ရှင်းပြီးပါပြီ");
+      } catch (e) {
+        console.error(e);
+        showToast("ရှင်းမရပါ");
+      }
+    }
+
+    async function save3DHistoryEntry() {
+      const dateStr = document.getElementById("r3d-date")?.value.trim();
+      const raw = document.getElementById("r3d-number")?.value.trim();
+      if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        showToast("နေ့စွဲရွေးပါ");
+        return;
+      }
+      if (!valid3(raw)) {
+        showToast("000–999 ဂဏန်းထည့်ပါ");
+        return;
+      }
+      try {
+        await database.ref("results3D/" + dateStr).set(fmt3(raw));
+        showToast(`${dateStr} 3D History သိမ်းပြီးပါပြီ`);
+      } catch (e) {
+        console.error(e);
+        showToast("သိမ်းမရပါ");
+      }
+    }
+
+    async function delete3DHistoryEntry(dateStr) {
+      try {
+        await database.ref("results3D/" + dateStr).remove();
+        showToast(`${dateStr} 3D ဖျက်ပြီးပါပြီ`);
+      } catch (e) {
+        console.error(e);
+        showToast("ဖျက်မရပါ");
+      }
+    }
+
+    function render3DHistoryList(data) {
+      const list = document.getElementById("results3d-list");
+      if (!list) return;
+
+      const entries = Object.entries(data || {})
+        .filter(([d, v]) => /^\d{4}-\d{2}-\d{2}$/.test(d) && valid3(v))
+        .sort(([a], [b]) => b.localeCompare(a));
+
+      if (!entries.length) {
+        list.innerHTML = '<div class="sub-note">3D History မရှိသေးပါ။</div>';
+        return;
+      }
+
+      list.innerHTML = entries.map(([d, v]) =>
+        `<div class="history-item">
+          <div class="history-meta">
+            <span class="history-date-label">${d}</span>
+            <span class="history-val-label">${fmt3(v)}</span>
+          </div>
+          <div class="mini-actions">
+            <button class="mini-btn btn-secondary" onclick="fill3DEdit('${d}', '${fmt3(v)}')">Edit</button>
+            <button class="mini-btn btn-danger" onclick="delete3DHistoryEntry('${d}')">Delete</button>
+          </div>
+        </div>`
+      ).join("");
+    }
+
+    function fill3DEdit(d, v) {
+      document.getElementById("r3d-date").value = d;
+      document.getElementById("r3d-number").value = v;
+    }
+
+    database.ref(".info/serverTimeOffset").on("value", snap => {
+      serverOffset = Number(snap.val() || 0);
+      updateClock();
+      const mm = getMMNow();
+      const hInp = document.getElementById("hist2d-date");
+      if (hInp && !hInp.value) {
+        hInp.value = mm.date;
+        load2DHistoryForDate(mm.date);
+      }
+      const rInp = document.getElementById("r3d-date");
+      if (rInp && !rInp.value) {
+        rInp.value = mm.date;
+      }
+    });
+
+    database.ref("preResults").on("value", snap => {
+      const data = snap.val() || {};
+      preKeys.forEach(k => {
+        const inp = document.getElementById("pre-" + k.replace(":", ""));
+        if (inp && document.activeElement !== inp) {
+          inp.value = valid2(data[k]) ? fmt2(data[k]) : "";
+        }
+      });
+    });
+
+    database.ref("history2D").on("value", snap => {
+      history2DCache = snap.val() || {};
+      render2DDatesList(history2DCache);
+      const curDate = document.getElementById("hist2d-date")?.value;
+      if (curDate) load2DHistoryForDate(curDate);
+    });
+
+    database.ref("preResults3D").on("value", snap => {
+      const v = snap.val();
+      const inp = document.getElementById("pre-3d-input");
+      if (inp && document.activeElement !== inp) {
+        inp.value = valid3(v) ? fmt3(v) : "";
+      }
+    });
+
+    database.ref("results3D").on("value", snap => {
+      results3DCache = snap.val() || {};
+      render3DHistoryList(results3DCache);
+    });
+
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
+
