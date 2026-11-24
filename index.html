@@ -21,6 +21,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -33,9 +34,51 @@ body {
   font-family: 'Roboto', sans-serif;
   overscroll-behavior: none;
   overflow: hidden;
+  -webkit-touch-callout: none;
+}
+
+button,
+.nav-item,
+.three-d-btn,
+.back,
+.icon-btn,
+.history-back,
+.history2d-back {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  outline: none;
+  touch-action: manipulation;
+}
+
+button:focus,
+button:active,
+.nav-item:focus,
+.nav-item:active,
+.back:focus,
+.back:active,
+.icon-btn:focus,
+.icon-btn:active {
+  outline: none;
+  background-color: transparent;
+}
+
+.three-d-btn:focus,
+.history-back:focus,
+.history2d-back:focus {
+  outline: none;
+  background-color: var(--card);
+}
+
+.three-d-btn:active,
+.history-back:active,
+.history2d-back:active {
+  background-color: #c4c9d1;
+  transform: scale(0.99);
 }
 
 .app {
+  position: relative;
   width: 100%;
   max-width: 550px;
   height: 100%;
@@ -49,18 +92,17 @@ body {
 
 /* HEADER */
 .header {
-  height: 48px;
+  height: 70px;
   flex-shrink: 0;
   background: var(--card);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
-  gap: 10px;
+  padding: 0 8px; /* အရင်က 0 12px ကို နည်းနည်းလျှော့ပြီး ဘယ်ဘက်ပိုကပ်ရန် */
+  gap: 4px; /* အရင်က 10px ကို 4px ပြောင်းပါ */
   color: var(--ink);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
-
 .back {
   width: 30px;
   height: 30px;
@@ -82,6 +124,7 @@ body {
   text-overflow: ellipsis;
   min-width: 0;
   flex: 1;
+  padding-left: 0px; /* ဘယ်ဘက်အစွန်နဲ့ ထပ်ကပ်ချင်ရင် 0px ပြောင်းပါ */
 }
 
 .icon-btn {
@@ -105,7 +148,7 @@ main {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 8px 10px 6px;
+  padding: 0 10px 6px;
   overflow: hidden;
 }
 
@@ -113,7 +156,7 @@ main {
 .main-card {
   width: 100%;
   flex: 0 0 auto;
-  min-height: 170px;
+  min-height: 166px;
   background: var(--card);
   border: 1px solid #d6d5dc;
   border-radius: 14px;
@@ -122,9 +165,20 @@ main {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 20px 12px;
+  padding: 18px 12px;
   color: var(--ink);
   gap: 8px;
+}
+
+/* 2D MAIN CARD: header နဲ့ 15px / အောက် result box တွေနဲ့ 10px ခွာရန် */
+#page-2d .main-card {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* 3D MAIN CARD: header နဲ့ 15px ခွာရန် */
+#page-3d .main-card {
+  margin-top: 15px;
 }
 
 .main-number {
@@ -197,7 +251,7 @@ main {
   flex: 0 0 auto;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(3, minmax(0, 80px)) auto auto;
+  grid-template-rows: repeat(3, minmax(0, 74px)) auto auto;
   gap: 7px;
 }
 
@@ -272,6 +326,31 @@ main {
   font-weight: 700;
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.20);
   cursor: pointer;
+  transition: transform 0.08s ease, background-color 0.12s ease;
+}
+
+/* TOAST */
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 70px;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(23, 37, 84, 0.94);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* BOTTOM NAV */
@@ -314,7 +393,7 @@ main {
 /* SHORT VIEWPORTS */
 @media (max-height: 700px) {
   #page-2d.active:not(.history-open) .results {
-    grid-template-rows: repeat(3, minmax(0, 68px)) auto auto;
+    grid-template-rows: repeat(3, minmax(0, 64px)) auto auto;
     gap: 5px;
   }
 
@@ -520,9 +599,9 @@ body.history-mode .header {
 <body>
   <div class="app">
     <header class="header">
-      <button class="back" aria-label="Back" onclick="history.back()">‹</button>
+      <button class="back" aria-label="Back" onclick="handleHeaderBack(this)"></button>
       <div class="brand" id="header-brand">HongKong 2D 🇭🇰</div>
-      <button class="icon-btn" id="header-history-btn" aria-label="2D History" onclick="showHistory()" type="button">2D</button>
+      <button class="icon-btn" id="header-history-btn" aria-label="2D History" onclick="showHistory(this)" type="button">2D</button>
     </header>
 
     <main>
@@ -577,7 +656,7 @@ body.history-mode .header {
 
         <section id="twoD-history">
           <div class="history-header">
-            <button class="history2d-back" onclick="close2DHistory()">‹ Back</button>
+            <button class="history2d-back" onclick="close2DHistory(this)">‹ Back</button>
             <div class="history-title">Hong Kong 2D History</div>
           </div>
           <div id="twoD-history-list" class="history2d-list">
@@ -594,13 +673,13 @@ body.history-mode .header {
           </div>
         </section>
         <div class="three-d-buttons">
-          <button class="three-d-btn" onclick="open3D('hongkong')">Hong Kong 3D</button>
-          <button class="three-d-btn" onclick="open3D('thai')">Thai 3D</button>
+          <button class="three-d-btn" onclick="open3D('hongkong', this)">Hong Kong 3D</button>
+          <button class="three-d-btn" onclick="open3D('thai', this)">Thai 3D</button>
         </div>
 
         <section id="hongkong-history">
           <div class="history-header">
-            <button class="history-back" onclick="close3DHistory()">‹ Back</button>
+            <button class="history-back" onclick="close3DHistory(this)">‹ Back</button>
             <div class="history-title">Hong Kong 3D History</div>
           </div>
           <div id="hongkong-history-list" class="history-list">
@@ -610,12 +689,14 @@ body.history-mode .header {
       </div>
     </main>
 
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
     <nav class="bottom-nav">
-      <button class="nav-item active" onclick="openLive('2d', this)">
+      <button class="nav-item active" id="nav-2d" onclick="openLive('2d', this)">
         <span class="nav-icon">📈</span>
         <span>2D Live</span>
       </button>
-      <button class="nav-item" onclick="openLive('3d', this)">
+      <button class="nav-item" id="nav-3d" onclick="openLive('3d', this)">
         <span class="nav-icon">◇</span>
         <span>3D Live</span>
       </button>
@@ -626,6 +707,7 @@ body.history-mode .header {
   <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-database-compat.js"></script>
   <script>
     const SLOT_MS = 7000;
+    const SLOT_3D_MS = 10000;
 
     const firebaseConfig = {
       apiKey: "AIzaSyBHmTO8u8VyFAkU9ApOL8xwsmRgPNgs9dw",
@@ -640,13 +722,59 @@ body.history-mode .header {
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    const pad = n => String(n).padStart(2, "0");
+    const getTwoDigit = value => String(value).padStart(2, "0");
+    const isValidTwoDigit = value => value !== undefined && value !== null && /^\d{1,2}$/.test(String(value));
+    const isValidThreeDigit = value => value !== undefined && value !== null && /^\d{1,3}$/.test(String(value));
+
     let serverTimeOffset = 0;
     let serverTimeReady = false;
     let lastSlotKey = "";
     let processingDraw = false;
-
     let historyServerTimeAnchor = 0;
     let historyMonotonicAnchor = 0;
+
+    let preResultsData = {};
+    let preResult3DCache = null;
+    let results3DCache = {};
+    let toastTimer = null;
+
+    const drawTimes = [
+      { label: "11:00AM", key: "1100AM", preKey: "11:00AM", seconds: 11 * 3600 },
+      { label: "1:00PM",  key: "0100PM", preKey: "01:00PM", seconds: 13 * 3600 },
+      { label: "3:00PM",  key: "0300PM", preKey: "03:00PM", seconds: 15 * 3600 },
+      { label: "5:00PM",  key: "0500PM", preKey: "05:00PM", seconds: 17 * 3600 },
+      { label: "7:00PM",  key: "0700PM", preKey: "07:00PM", seconds: 19 * 3600 },
+      { label: "9:00PM",  key: "0900PM", preKey: "09:00PM", seconds: 21 * 3600 }
+    ];
+
+    const history2DTimes = [
+      "11:00 AM", "1:00 PM", "3:00 PM",
+      "5:00 PM", "7:00 PM", "9:00 PM"
+    ];
+
+    const initial3DHistory = {
+      "2026-10-28": "291", "2026-10-21": "563", "2026-10-14": "109",
+      "2026-10-07": "436", "2026-09-30": "782", "2026-09-23": "048",
+      "2026-09-16": "615", "2026-09-09": "970", "2026-09-02": "324",
+      "2026-08-26": "856", "2026-08-19": "193", "2026-08-12": "508",
+      "2026-08-05": "741", "2026-07-29": "062", "2026-07-22": "395",
+      "2026-07-15": "827", "2026-07-08": "014", "2026-07-01": "679",
+      "2026-06-24": "230", "2026-06-17": "451", "2026-06-10": "894",
+      "2026-06-03": "168", "2026-05-27": "705", "2026-05-20": "342",
+      "2026-05-13": "916", "2026-05-06": "027", "2026-04-29": "583"
+    };
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2000);
+    }
 
     function getHistoryServerNow() {
       if (!serverTimeReady) return 0;
@@ -665,25 +793,9 @@ body.history-mode .header {
       };
     }
 
-    const drawTimes = [
-      { label: "11:00AM", key: "1100AM", preKey: "11:00AM", seconds: 11 * 3600 },
-      { label: "1:00PM",  key: "0100PM", preKey: "01:00PM", seconds: 13 * 3600 },
-      { label: "3:00PM",  key: "0300PM", preKey: "03:00PM", seconds: 15 * 3600 },
-      { label: "5:00PM",  key: "0500PM", preKey: "05:00PM", seconds: 17 * 3600 },
-      { label: "7:00PM",  key: "0700PM", preKey: "07:00PM", seconds: 19 * 3600 },
-      { label: "9:00PM",  key: "0900PM", preKey: "09:00PM", seconds: 21 * 3600 }
-    ];
-
-    let preResultsData = {};
-    const pad = n => String(n).padStart(2, "0");
-
     function getSlotKey(t) {
       const slot = Math.floor(t.second / 7);
       return `${t.date}_${pad(t.hour)}_${pad(t.minute)}_${slot}`;
-    }
-
-    function getTwoDigit(value) {
-      return String(value).padStart(2, "0");
     }
 
     function updateMainNumber(value) {
@@ -713,7 +825,7 @@ body.history-mode .header {
 
       if (secondsNow >= 21 * 3600) {
         const finalValue = preResultsData["09:00PM"];
-        if (finalValue !== undefined && finalValue !== null && /^\d{1,2}$/.test(String(finalValue))) {
+        if (isValidTwoDigit(finalValue)) {
           el.textContent = getTwoDigit(finalValue);
           el.classList.add("result-locked");
           showCheck(true);
@@ -727,10 +839,7 @@ body.history-mode .header {
 
         if (secondsNow >= preStart && secondsNow < freezeUntil) {
           const resultValue = preResultsData[draw.preKey];
-          const validResult =
-            resultValue !== undefined &&
-            resultValue !== null &&
-            /^\d{1,2}$/.test(String(resultValue));
+          const validResult = isValidTwoDigit(resultValue);
 
           if (validResult) {
             el.textContent = getTwoDigit(resultValue);
@@ -867,12 +976,12 @@ body.history-mode .header {
       }
     }
 
-    async function processDraws() {
+    function processDraws() {
       if (!serverTimeReady) return;
 
       const t = getMyanmarDate();
       if (t.weekday === 1) {
-        renderResults(t.date, {});
+        renderResults({});
         return;
       }
 
@@ -882,19 +991,16 @@ body.history-mode .header {
       drawTimes.forEach(draw => {
         if (secondsNow >= draw.seconds) {
           const value = preResultsData[draw.preKey];
-          results[draw.key] =
-            value !== undefined && value !== null && /^\d{1,2}$/.test(String(value))
-              ? getTwoDigit(value)
-              : "";
+          results[draw.key] = isValidTwoDigit(value) ? getTwoDigit(value) : "";
         } else {
           results[draw.key] = "";
         }
       });
 
-      renderResults(t.date, results);
+      renderResults(results);
     }
 
-    function renderResults(date, results) {
+    function renderResults(results) {
       const boxes = document.querySelectorAll("#results .result-box");
       drawTimes.forEach((draw, index) => {
         const box = boxes[index];
@@ -909,65 +1015,10 @@ body.history-mode .header {
       });
     }
 
-    async function loadTodayResults() {
-      if (!serverTimeReady) return;
-
-      const t = getMyanmarDate();
-      if (t.weekday === 1) {
-        renderResults(t.date, {});
-        return;
-      }
-
-      try {
-        const snapshot = await database.ref(`results/${t.date}`).once("value");
-        renderResults(t.date, snapshot.val() || {});
-      } catch (error) {
-        console.error("Load results error:", error);
-      }
-    }
-
-    database.ref(".info/serverTimeOffset").on("value", snapshot => {
-      serverTimeOffset = Number(snapshot.val() || 0);
-      serverTimeReady = true;
-
-      historyServerTimeAnchor = Date.now() + serverTimeOffset;
-      historyMonotonicAnchor = performance.now();
-
-      updateClock();
-      loadRandomSlot();
-      loadTodayResults();
-      processDraws();
-      process2DHistory();
-    });
-
-    database.ref("live/number").on("value", snapshot => {
-      const value = snapshot.val();
-      if (value !== null && value !== undefined) {
-        updateMainNumber(value);
-      }
-    });
-
-    database.ref("preResults").on("value", snapshot => {
-      preResultsData = snapshot.val() || {};
-      const currentValue = document.getElementById("main-number")?.textContent || "--";
-      updateMainNumber(currentValue);
-      processDraws();
-      process2DHistory();
-    });
-
-    database.ref("results").on("value", snapshot => {
-      if (!serverTimeReady) return;
-      processDraws();
-    });
-
-    const history2DTimes = [
-      "11:00 AM", "1:00 PM", "3:00 PM",
-      "5:00 PM", "7:00 PM", "9:00 PM"
-    ];
-
     let history2DInitializedDate = "";
     let history2DProcessing = false;
     let history2DListenerAttached = false;
+    let history3DListenerAttached = false;
 
     async function process2DHistory() {
       if (!serverTimeReady || history2DProcessing) return;
@@ -995,7 +1046,7 @@ body.history-mode .header {
           if (secondsNow < draw.seconds) continue;
 
           const value = preResultsData[draw.preKey];
-          if (value === undefined || value === null || !/^\d{1,2}$/.test(String(value))) continue;
+          if (!isValidTwoDigit(value)) continue;
 
           const finalValue = getTwoDigit(value);
           const resultRef = historyRef.child(t.date).child(String(index));
@@ -1012,7 +1063,8 @@ body.history-mode .header {
       }
     }
 
-    async function showHistory() {
+    async function showHistory(button) {
+      if (button) button.blur();
       const page = document.getElementById("page-2d");
       page.classList.add("history-open");
       document.body.classList.add("history-mode");
@@ -1035,7 +1087,8 @@ body.history-mode .header {
       await process2DHistory();
     }
 
-    function close2DHistory() {
+    function close2DHistory(button) {
+      if (button) button.blur();
       document.getElementById("page-2d").classList.remove("history-open");
       document.body.classList.remove("history-mode");
     }
@@ -1083,10 +1136,9 @@ body.history-mode .header {
           numberEl.className = "history2d-number";
 
           const value = values[index];
-          numberEl.textContent =
-            value !== undefined && /^\d{1,2}$/.test(String(value))
-              ? String(value).padStart(2, "0")
-              : "??";
+          numberEl.textContent = isValidTwoDigit(value)
+            ? getTwoDigit(value)
+            : "??";
 
           item.append(timeEl, numberEl);
           grid.appendChild(item);
@@ -1098,6 +1150,9 @@ body.history-mode .header {
     }
 
     function openLive(type, button) {
+      close2DHistory();
+      close3DHistory();
+
       document.querySelectorAll(".live-page").forEach(page => {
         page.classList.remove("active");
       });
@@ -1109,7 +1164,10 @@ body.history-mode .header {
         btn.classList.remove("active");
       });
 
-      if (button) button.classList.add("active");
+      if (button) {
+        button.classList.add("active");
+        button.blur();
+      }
 
       const brandEl = document.getElementById("header-brand");
       const historyBtn = document.getElementById("header-history-btn");
@@ -1123,23 +1181,31 @@ body.history-mode .header {
       }
     }
 
-    const initial3DHistory = {
-      "2026-10-28": "291", "2026-10-21": "563", "2026-10-14": "109",
-      "2026-10-07": "436", "2026-09-30": "782", "2026-09-23": "048",
-      "2026-09-16": "615", "2026-09-09": "970", "2026-09-02": "324",
-      "2026-08-26": "856", "2026-08-19": "193", "2026-08-12": "508",
-      "2026-08-05": "741", "2026-07-29": "062", "2026-07-22": "395",
-      "2026-07-15": "827", "2026-07-08": "014", "2026-07-01": "679",
-      "2026-06-24": "230", "2026-06-17": "451", "2026-06-10": "894",
-      "2026-06-03": "168", "2026-05-27": "705", "2026-05-20": "342",
-      "2026-05-13": "916", "2026-05-06": "027", "2026-04-29": "583"
-    };
+    function handleHeaderBack(button) {
+      if (button) button.blur();
+      if (document.getElementById("page-2d")?.classList.contains("history-open")) {
+        close2DHistory();
+        return;
+      }
+      if (document.getElementById("page-3d")?.classList.contains("history-open")) {
+        close3DHistory();
+        return;
+      }
+      if (document.getElementById("page-3d")?.classList.contains("active")) {
+        openLive("2d", document.getElementById("nav-2d"));
+        return;
+      }
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        showToast("Main Screen");
+      }
+    }
 
-    let history3DListenerAttached = false;
-
-    async function open3D(type) {
+    async function open3D(type, button) {
+      if (button) button.blur();
       if (type !== "hongkong") {
-        alert("Thai 3D");
+        showToast("Thai 3D Coming Soon");
         return;
       }
 
@@ -1158,12 +1224,7 @@ body.history-mode .header {
           return data;
         });
 
-        if (!history3DListenerAttached) {
-          history3DListenerAttached = true;
-          database.ref("results3D").on("value", snapshot => {
-            renderHongKong3DHistory(snapshot.val() || {});
-          });
-        }
+        renderHongKong3DHistory(results3DCache);
       } catch (error) {
         console.error("3D history load error:", error);
         document.getElementById("hongkong-history-list").innerHTML =
@@ -1171,7 +1232,8 @@ body.history-mode .header {
       }
     }
 
-    function close3DHistory() {
+    function close3DHistory(button) {
+      if (button) button.blur();
       document.getElementById("page-3d").classList.remove("history-open");
       document.body.classList.remove("history-mode");
     }
@@ -1180,10 +1242,10 @@ body.history-mode .header {
       const list = document.getElementById("hongkong-history-list");
       if (!list) return;
 
-      const entries = Object.entries(data)
+      const entries = Object.entries(data || {})
         .filter(([date, value]) =>
           /^\d{4}-\d{2}-\d{2}$/.test(date) &&
-          /^\d{1,3}$/.test(String(value))
+          isValidThreeDigit(value)
         )
         .sort(([dateA], [dateB]) => dateB.localeCompare(dateA));
 
@@ -1213,17 +1275,10 @@ body.history-mode .header {
       }
     }
 
-    setInterval(() => {
-      updateClock();
-      loadRandomSlot();
-      processDraws();
-      process2DHistory();
-    }, 1000);
-
-    const SLOT_3D_MS = 10000;
     let lastSlot3D = "";
     let current3DValue = "";
     let processing3D = false;
+    let saved3DFinalDate = "";
 
     function getWednesday3DTime() {
       const now = getHistoryServerNow();
@@ -1262,24 +1317,23 @@ body.history-mode .header {
       const finalTimeMs = 21 * 3600 * 1000;
 
       if (t.weekday === 4) {
-        const savedDate = t.date;
         const previousWednesday = new Date(
           Date.UTC(
-            Number(savedDate.slice(0, 4)),
-            Number(savedDate.slice(5, 7)) - 1,
-            Number(savedDate.slice(8, 10))
+            Number(t.date.slice(0, 4)),
+            Number(t.date.slice(5, 7)) - 1,
+            Number(t.date.slice(8, 10))
           )
         );
         previousWednesday.setUTCDate(previousWednesday.getUTCDate() - 1);
 
-        const y = previousWednesday.getUTCFullYear();
-        const m = pad(previousWednesday.getUTCMonth() + 1);
-        const d = pad(previousWednesday.getUTCDate());
-        const resultDate = `${y}-${m}-${d}`;
+        const resultDate =
+          `${previousWednesday.getUTCFullYear()}-` +
+          `${pad(previousWednesday.getUTCMonth() + 1)}-` +
+          `${pad(previousWednesday.getUTCDate())}`;
 
-        const savedResult = await database.ref("results3D/" + resultDate).once("value");
-        if (savedResult.exists()) {
-          show3DFinal(savedResult.val());
+        const savedVal = results3DCache[resultDate];
+        if (isValidThreeDigit(savedVal)) {
+          show3DFinal(savedVal);
         } else {
           el.textContent = "---";
           el.style.visibility = "visible";
@@ -1287,61 +1341,64 @@ body.history-mode .header {
         return;
       }
 
-      if (t.weekday !== 3) {
+      if (t.weekday !== 3 || t.milliseconds < startMs) {
         el.textContent = "---";
         el.style.visibility = "visible";
         return;
       }
 
-      if (t.milliseconds < startMs) {
-        el.textContent = "---";
-        el.style.visibility = "visible";
+      if (t.milliseconds >= preTimeMs && t.milliseconds < finalTimeMs) {
+        if (isValidThreeDigit(preResult3DCache)) {
+          show3DFinal(preResult3DCache);
+        } else {
+          el.textContent = "---";
+          el.style.visibility = "visible";
+        }
         return;
       }
 
-      processing3D = true;
+      if (t.milliseconds >= finalTimeMs) {
+        const finalCandidate = isValidThreeDigit(preResult3DCache)
+          ? String(preResult3DCache).padStart(3, "0")
+          : results3DCache[t.date];
 
-      try {
-        if (t.milliseconds >= preTimeMs && t.milliseconds < finalTimeMs) {
-          const preSnapshot = await database.ref("preResults3D").once("value");
-          const preValue = preSnapshot.val();
-          if (preValue !== null && preValue !== undefined && /^\d{1,3}$/.test(String(preValue))) {
-            show3DFinal(String(preValue).padStart(3, "0"));
-          } else {
-            el.textContent = "---";
-            el.style.visibility = "visible";
-          }
+        if (!isValidThreeDigit(finalCandidate)) {
+          el.textContent = "---";
+          el.style.visibility = "visible";
           return;
         }
 
-        if (t.milliseconds >= finalTimeMs) {
-          const preSnapshot = await database.ref("preResults3D").once("value");
-          const preValue = preSnapshot.val();
-          if (preValue === null || preValue === undefined || !/^\d{1,3}$/.test(String(preValue))) {
-            el.textContent = "---";
-            el.style.visibility = "visible";
-            return;
+        const finalValue = String(finalCandidate).padStart(3, "0");
+        show3DFinal(finalValue);
+
+        if (saved3DFinalDate !== t.date) {
+          processing3D = true;
+          try {
+            const finalRef = database.ref("results3D/" + t.date);
+            const finalResult = await finalRef.transaction(current => {
+              if (current !== null) return current;
+              return finalValue;
+            });
+            if (finalResult.snapshot.exists()) {
+              saved3DFinalDate = t.date;
+              show3DFinal(finalResult.snapshot.val());
+            }
+          } catch (error) {
+            console.error("3D final save error:", error);
+          } finally {
+            processing3D = false;
           }
-
-          const finalValue = String(preValue).padStart(3, "0");
-          const finalRef = database.ref("results3D/" + t.date);
-
-          const finalResult = await finalRef.transaction(current => {
-            if (current !== null) return current;
-            return finalValue;
-          });
-
-          if (finalResult.snapshot.exists()) {
-            show3DFinal(finalResult.snapshot.val());
-          }
-          return;
         }
+        return;
+      }
 
-        const elapsedMs = t.milliseconds - startMs;
-        const slot = Math.floor(elapsedMs / SLOT_3D_MS);
-        const slotKey = `${t.date}_${slot}`;
+      const elapsedMs = t.milliseconds - startMs;
+      const slot = Math.floor(elapsedMs / SLOT_3D_MS);
+      const slotKey = `${t.date}_${slot}`;
 
-        if (slotKey !== lastSlot3D || !current3DValue) {
+      if (slotKey !== lastSlot3D || !current3DValue) {
+        processing3D = true;
+        try {
           const randomRef = database.ref("randomSlots3D/" + slotKey);
           const randomResult = await randomRef.transaction(current => {
             if (current !== null) return current;
@@ -1351,30 +1408,83 @@ body.history-mode .header {
           if (!randomResult.snapshot.exists()) return;
           current3DValue = String(randomResult.snapshot.val()).padStart(3, "0");
           lastSlot3D = slotKey;
-        }
-
-        const latest = getWednesday3DTime();
-        if (
-          latest.weekday !== 3 ||
-          latest.date !== t.date ||
-          latest.milliseconds < startMs ||
-          latest.milliseconds >= preTimeMs ||
-          Math.floor((latest.milliseconds - startMs) / SLOT_3D_MS) !== slot
-        ) {
+        } catch (error) {
+          console.error("3D random error:", error);
           return;
+        } finally {
+          processing3D = false;
         }
-
-        const phaseMs = (latest.milliseconds - startMs) % SLOT_3D_MS;
-        display3DNumber(current3DValue, phaseMs);
-      } catch (error) {
-        console.error("3D random error:", error);
-      } finally {
-        processing3D = false;
       }
+
+      const latest = getWednesday3DTime();
+      if (
+        latest.weekday !== 3 ||
+        latest.date !== t.date ||
+        latest.milliseconds < startMs ||
+        latest.milliseconds >= preTimeMs ||
+        Math.floor((latest.milliseconds - startMs) / SLOT_3D_MS) !== slot
+      ) {
+        return;
+      }
+
+      const phaseMs = (latest.milliseconds - startMs) % SLOT_3D_MS;
+      display3DNumber(current3DValue, phaseMs);
     }
 
-    setInterval(update3DRandom, 100);
-    update3DRandom();
+    database.ref(".info/serverTimeOffset").on("value", snapshot => {
+      serverTimeOffset = Number(snapshot.val() || 0);
+      serverTimeReady = true;
+
+      historyServerTimeAnchor = Date.now() + serverTimeOffset;
+      historyMonotonicAnchor = performance.now();
+
+      updateClock();
+      loadRandomSlot();
+      processDraws();
+      process2DHistory();
+      update3DRandom();
+    });
+
+    database.ref("live/number").on("value", snapshot => {
+      const value = snapshot.val();
+      if (value !== null && value !== undefined) {
+        updateMainNumber(value);
+      }
+    });
+
+    database.ref("preResults").on("value", snapshot => {
+      preResultsData = snapshot.val() || {};
+      const currentValue = document.getElementById("main-number")?.textContent || "--";
+      updateMainNumber(currentValue);
+      processDraws();
+      process2DHistory();
+    });
+
+    database.ref("preResults3D").on("value", snapshot => {
+      preResult3DCache = snapshot.val();
+      update3DRandom();
+    });
+
+    database.ref("results3D").on("value", snapshot => {
+      results3DCache = snapshot.val() || {};
+      if (history3DListenerAttached) {
+        renderHongKong3DHistory(results3DCache);
+      }
+      update3DRandom();
+    });
+
+    database.ref("results3D").once("value").then(() => {
+      history3DListenerAttached = true;
+    });
+
+    setInterval(() => {
+      updateClock();
+      loadRandomSlot();
+      processDraws();
+      process2DHistory();
+    }, 1000);
+
+    setInterval(update3DRandom, 250);
   </script>
 </body>
 </html>
