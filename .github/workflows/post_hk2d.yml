@@ -1,0 +1,31 @@
+name: Post Hong Kong 2D Result to Telegram
+
+on:
+  schedule:
+    - cron: "30 4,6,8,10,12,14 * * *"
+  workflow_dispatch:
+
+jobs:
+  post-result:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install playwright
+
+      - name: Install Chromium
+        run: npx playwright install chromium
+
+      - name: Run Bot Script
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          FIREBASE_URL: "https://hongkong2d-default-rtdb.firebaseio.com/.json"
+        run: node send_hk2d.js
