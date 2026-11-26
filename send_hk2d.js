@@ -42,7 +42,7 @@ function getMyanmarNowParts() {
   };
 }
 
-function buildCardPayload(dbData) {
+function buildCardPayload(dbData, forcePost) {
   const mm = getMyanmarNowParts();
   const preResults =
     dbData?.preResults && typeof dbData.preResults === "object"
@@ -52,6 +52,7 @@ function buildCardPayload(dbData) {
 
   const slotValues = {};
   let activeSlot = null;
+  let latestAvailableSlot = null;
 
   for (const slot of DRAW_SLOTS) {
     const rawPre = preResults[slot.preKey];
@@ -64,11 +65,25 @@ function buildCardPayload(dbData) {
       rawNum = pad2(String(rawHist).trim());
     }
 
-    // Check if we are within 0 to 1 minute after this draw time (e.g., 11:00 - 11:01, 13:00 - 13:01)
+    const isReleasedTime = forcePost || mm.minutesNow >= slot.minutes;
+
+    if (isReleasedTime && rawNum !== null) {
+      slotValues[slot.label] = rawNum;
+      latestAvailableSlot = {
+        label: slot.label,
+        mmLabel: slot.mmLabel,
+        preKey: slot.preKey,
+        number: rawNum
+      };
+    } else {
+      slotValues[slot.label] = "??";
+    }
+
+    // For scheduled runs, prioritize a slot within 0 to 1 minute after draw time
     const isWithinOneMinuteWindow =
       mm.minutesNow >= slot.minutes && mm.minutesNow <= slot.minutes + 1;
 
-    if (isWithinOneMinuteWindow && rawNum !== null) {
+    if (!forcePost && isWithinOneMinuteWindow && rawNum !== null) {
       activeSlot = {
         label: slot.label,
         mmLabel: slot.mmLabel,
@@ -76,28 +91,10 @@ function buildCardPayload(dbData) {
         number: rawNum
       };
     }
-
-    // Only show numbers for slots whose draw time has already arrived; keep upcoming slots as "??"
-    // Also during a draw's 1-minute window, show that active slot's number and keep later slots as "??"
-    if (mm.minutesNow >= slot.minutes && rawNum !== null) {
-      slotValues[slot.label] = rawNum;
-    } else {
-      slotValues[slot.label] = "??";
-    }
   }
 
-  // If the current draw slot hasn't published a number yet during its 0-1 min window, keep only already-released earlier slots
   if (!activeSlot) {
-    for (const slot of DRAW_SLOTS) {
-      if (mm.minutesNow >= slot.minutes && slotValues[slot.label] !== "??") {
-        activeSlot = {
-          label: slot.label,
-          mmLabel: slot.mmLabel,
-          preKey: slot.preKey,
-          number: slotValues[slot.label]
-        };
-      }
-    }
+    activeSlot = latestAvailableSlot;
   }
 
   return {
@@ -131,7 +128,8 @@ async function main() {
     throw new Error("Missing BOT_TOKEN or CHAT_ID environment variables.");
   }
 
-  const forcePost = process.env.FORCE_POST === "true";
+  const isManualDispatch = process.env.GITHUB_EVENT_NAME === "workflow_dispatch";
+  const forcePost = process.env.FORCE_POST === "true" || isManualDispatch;
   const skipDuplicate = process.env.SKIP_DUPLICATE === "true";
 
   const res = await fetch(FIREBASE_URL);
@@ -140,14 +138,14 @@ async function main() {
   }
 
   const dbData = await res.json();
-  const payload = buildCardPayload(dbData);
+  const payload = buildCardPayload(dbData, forcePost);
 
   if (payload.weekday === 1 && !forcePost) {
     console.log("Monday is closed. Skipping post.");
     return;
   }
 
-  if (!payload.activeSlot && !forcePost) {
+  if (!payload.activeSlot) {
     console.log("No active draw result to post at this time.");
     return;
   }
@@ -155,7 +153,8 @@ async function main() {
   const signature = `${payload.date}_${payload.slotLabel}_${payload.mainNumber}`;
   const prev = loadLastPosted();
 
-  if (skipDuplicate && !forcePost && prev && prev.signature === signature) {
+  // When manually triggered via Run workflow, post immediately without blocking on duplicate check
+  if (!isManualDispatch && skipDuplicate && !forcePost && prev && prev.signature === signature) {
     console.log("Already posted this result:", signature);
     return;
   }
