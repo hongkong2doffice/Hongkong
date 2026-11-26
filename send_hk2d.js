@@ -22,94 +22,92 @@ const isValidTwoDigit = (v) =>
   v !== undefined && v !== null && /^\d{1,2}$/.test(String(v).trim());
 
 function getMyanmarNowParts() {
-  const now = new Date();
-  const mmDate = new Date(now.getTime() + 390 * 60 * 1000);
+  const nowMs = Date.now();
+  const mmDate = new Date(nowMs + 390 * 60 * 1000);
+  const hour24 = mmDate.getUTCHours();
+  const minute = mmDate.getUTCMinutes();
+  const second = mmDate.getUTCSeconds();
+  const day = mmDate.getUTCDate();
+  const month = mmDate.getUTCMonth() + 1;
+  const year = mmDate.getUTCFullYear();
+
+  const hour12 = hour24 % 12 || 12;
+  const ampm = hour24 >= 12 ? "PM" : "AM";
+
   return {
-    date: `${mmDate.getUTCFullYear()}-${pad2(mmDate.getUTCMonth() + 1)}-${pad2(mmDate.getUTCDate())}`,
+    date: `${year}-${pad2(month)}-${pad2(day)}`,
     weekday: mmDate.getUTCDay(), // 1 = Monday
-    minutesNow: mmDate.getUTCHours() * 60 + mmDate.getUTCMinutes(),
-    formattedTime:
-      `${pad2(mmDate.getUTCHours() % 12 || 12)}:` +
-      `${pad2(mmDate.getUTCMinutes())}:` +
-      `${pad2(mmDate.getUTCSeconds())} ` +
-      `${mmDate.getUTCHours() >= 12 ? "PM" : "AM"} ` +
-      `${pad2(mmDate.getUTCDate())}-` +
-      `${pad2(mmDate.getUTCMonth() + 1)}-` +
-      `${mmDate.getUTCFullYear()}`
+    minutesNow: hour24 * 60 + minute,
+    formattedTime: `${pad2(hour12)}:${pad2(minute)}:${pad2(second)} ${ampm} ${pad2(day)}-${pad2(month)}-${year}`
   };
 }
 
 function buildCardPayload(dbData) {
   const mm = getMyanmarNowParts();
-  const preResults = dbData?.preResults && typeof dbData.preResults === "object"
-    ? dbData.preResults
-    : {};
+  const preResults =
+    dbData?.preResults && typeof dbData.preResults === "object"
+      ? dbData.preResults
+      : {};
   const todayHistory = dbData?.history2D?.[mm.date] || {};
 
   const slotValues = {};
-  let latestSlot = null;
+  let activeSlot = null;
 
   for (const slot of DRAW_SLOTS) {
     const rawPre = preResults[slot.preKey];
     const rawHist = todayHistory[slot.index] ?? todayHistory[String(slot.index)];
 
-    let val = "??";
+    let rawNum = null;
     if (isValidTwoDigit(rawPre)) {
-      val = pad2(String(rawPre).trim());
+      rawNum = pad2(String(rawPre).trim());
     } else if (isValidTwoDigit(rawHist)) {
-      val = pad2(String(rawHist).trim());
+      rawNum = pad2(String(rawHist).trim());
     }
 
-    slotValues[slot.label] = val;
+    // Check if we are within 0 to 1 minute after this draw time (e.g., 11:00 - 11:01, 13:00 - 13:01)
+    const isWithinOneMinuteWindow =
+      mm.minutesNow >= slot.minutes && mm.minutesNow <= slot.minutes + 1;
 
-    // Track the latest released slot up to current Myanmar time
-    if (mm.minutesNow >= slot.minutes && val !== "??") {
-      latestSlot = {
+    if (isWithinOneMinuteWindow && rawNum !== null) {
+      activeSlot = {
         label: slot.label,
         mmLabel: slot.mmLabel,
         preKey: slot.preKey,
-        number: val
+        number: rawNum
       };
+    }
+
+    // Only show numbers for slots whose draw time has already arrived; keep upcoming slots as "??"
+    // Also during a draw's 1-minute window, show that active slot's number and keep later slots as "??"
+    if (mm.minutesNow >= slot.minutes && rawNum !== null) {
+      slotValues[slot.label] = rawNum;
+    } else {
+      slotValues[slot.label] = "??";
     }
   }
 
-  // Fallback if running manually outside draw window or using test values
-  if (!latestSlot) {
-    for (let i = DRAW_SLOTS.length - 1; i >= 0; i--) {
-      const s = DRAW_SLOTS[i];
-      const v = slotValues[s.label];
-      if (v && v !== "??") {
-        latestSlot = {
-          label: s.label,
-          mmLabel: s.mmLabel,
-          preKey: s.preKey,
-          number: v
+  // If the current draw slot hasn't published a number yet during its 0-1 min window, keep only already-released earlier slots
+  if (!activeSlot) {
+    for (const slot of DRAW_SLOTS) {
+      if (mm.minutesNow >= slot.minutes && slotValues[slot.label] !== "??") {
+        activeSlot = {
+          label: slot.label,
+          mmLabel: slot.mmLabel,
+          preKey: slot.preKey,
+          number: slotValues[slot.label]
         };
-        break;
       }
     }
   }
 
-  if (!latestSlot) {
-    latestSlot = {
-      label: "7:00PM",
-      mmLabel: "7နာရီ",
-      preKey: "07:00PM",
-      number: "81"
-    };
-  }
-
-  const liveNumber = isValidTwoDigit(dbData?.live?.number)
-    ? pad2(String(dbData.live.number).trim())
-    : latestSlot.number;
-
   return {
     date: mm.date,
     weekday: mm.weekday,
-    mainNumber: latestSlot.number,
-    liveNumber,
-    mmLabel: latestSlot.mmLabel,
-    slotLabel: latestSlot.label,
+    minutesNow: mm.minutesNow,
+    activeSlot,
+    mainNumber: activeSlot ? activeSlot.number : "--",
+    mmLabel: activeSlot ? activeSlot.mmLabel : "",
+    slotLabel: activeSlot ? activeSlot.label : "",
     updatedAt: mm.formattedTime,
     slots: slotValues
   };
@@ -146,6 +144,11 @@ async function main() {
 
   if (payload.weekday === 1 && !forcePost) {
     console.log("Monday is closed. Skipping post.");
+    return;
+  }
+
+  if (!payload.activeSlot && !forcePost) {
+    console.log("No active draw result to post at this time.");
     return;
   }
 
