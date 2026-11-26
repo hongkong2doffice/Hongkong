@@ -189,8 +189,18 @@ input:focus {
   cursor: pointer;
 }
 
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .btn-primary {
   background: var(--green);
+  color: #ffffff;
+}
+
+.btn-tg {
+  background: #0876a0;
   color: #ffffff;
 }
 
@@ -202,6 +212,13 @@ input:focus {
 .btn-danger {
   background: var(--red);
   color: #ffffff;
+}
+
+.tg-status {
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  min-height: 18px;
 }
 
 .history-item {
@@ -325,6 +342,11 @@ input:focus {
           <button class="btn btn-primary" onclick="savePreResults()">Save Pre-Results</button>
           <button class="btn btn-secondary" onclick="clearPreResultsInputs()">Clear Inputs</button>
         </div>
+
+        <div class="row-actions">
+          <button class="btn btn-tg" id="tgDispatchBtn" onclick="triggerHk2dTelegram()">Telegram ထဲ တင်မယ်</button>
+        </div>
+        <div id="tgDispatchStatus" class="tg-status"></div>
       </div>
     </section>
 
@@ -453,6 +475,11 @@ input:focus {
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    const GH_OWNER = "hongkong2doffice";
+    const GH_REPO = "Hongkong";
+    const GH_WORKFLOW_FILE = "post_hk2d.yml";
+    const GH_TOKEN = "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";
+
     const pad = n => String(n).padStart(2, "0");
     const fmt2 = v => String(v).padStart(2, "0");
     const fmt3 = v => String(v).padStart(3, "0");
@@ -474,6 +501,56 @@ input:focus {
       el.classList.add("show");
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
+    }
+
+    async function triggerHk2dTelegram() {
+      const btn = document.getElementById("tgDispatchBtn");
+      const status = document.getElementById("tgDispatchStatus");
+
+      if (btn) btn.disabled = true;
+      if (status) {
+        status.style.color = "#172554";
+        status.textContent = "Workflow ပို့နေပါတယ်...";
+      }
+
+      try {
+        const res = await fetch(
+          `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW_FILE}/dispatches`,
+          {
+            method: "POST",
+            headers: {
+              "Accept": "application/vnd.github+json",
+              "Authorization": `Bearer ${GH_TOKEN}`,
+              "X-GitHub-Api-Version": "2022-11-28",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ ref: "main" })
+          }
+        );
+
+        if (res.status === 204) {
+          if (status) {
+            status.style.color = "#166534";
+            status.textContent = "တင်ခိုင်းလိုက်ပြီ (Telegram ထဲ ~20-30s အတွင်း တက်လာပါမယ်)။";
+          }
+          showToast("Telegram workflow တင်ခိုင်းလိုက်ပါပြီ");
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          if (status) {
+            status.style.color = "#dc2626";
+            status.textContent = `မအောင်မြင်ပါ (${res.status}): ${errData.message || "Error"}`;
+          }
+          showToast("Workflow ပို့မရပါ");
+        }
+      } catch (err) {
+        if (status) {
+          status.style.color = "#dc2626";
+          status.textContent = `Network error: ${err.message}`;
+        }
+        showToast("Network error");
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     }
 
     function getMMNow() {
@@ -808,4 +885,3 @@ input:focus {
   </script>
 </body>
 </html>
-
