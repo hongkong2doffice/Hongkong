@@ -52,7 +52,7 @@ function buildCardPayload(dbData, forcePost) {
 
   const slotValues = {};
   let activeSlot = null;
-  let latestAvailableSlot = null;
+  let latestReleasedSlot = null;
 
   for (const slot of DRAW_SLOTS) {
     const rawPre = preResults[slot.preKey];
@@ -65,11 +65,12 @@ function buildCardPayload(dbData, forcePost) {
       rawNum = pad2(String(rawHist).trim());
     }
 
-    const isReleasedTime = forcePost || mm.minutesNow >= slot.minutes;
+    // Always require draw time to have arrived so future slots stay "??"
+    const isReleasedTime = mm.minutesNow >= slot.minutes;
 
     if (isReleasedTime && rawNum !== null) {
       slotValues[slot.label] = rawNum;
-      latestAvailableSlot = {
+      latestReleasedSlot = {
         label: slot.label,
         mmLabel: slot.mmLabel,
         preKey: slot.preKey,
@@ -93,8 +94,9 @@ function buildCardPayload(dbData, forcePost) {
     }
   }
 
-  if (!activeSlot) {
-    activeSlot = latestAvailableSlot;
+  // On manual dispatch (Run workflow), use the latest released slot without waiting for 1-min window
+  if (!activeSlot && forcePost) {
+    activeSlot = latestReleasedSlot;
   }
 
   return {
