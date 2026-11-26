@@ -141,10 +141,36 @@ body {
   gap: 4px;
 }
 
+.field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .field label {
   font-size: 13px;
   font-weight: 700;
   color: var(--navy);
+}
+
+.lock-toggle-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lock-toggle-btn.locked {
+  background: #fee2e2;
+  color: var(--red);
+}
+
+.lock-toggle-btn.unlocked {
+  background: #dcfce7;
+  color: var(--green);
 }
 
 input[type="text"],
@@ -168,6 +194,14 @@ input[type="password"] {
   text-align: left;
 }
 
+input[type="password"]:read-only,
+input[type="password"]:disabled {
+  background: #e2e8f0;
+  color: #475569;
+  border-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
 input[type="date"] {
   font-size: 14px;
   color: var(--ink);
@@ -177,6 +211,12 @@ input[type="date"] {
 input:focus {
   border-color: var(--blue);
   background: #ffffff;
+}
+
+input[type="password"]:read-only:focus,
+input[type="password"]:disabled:focus {
+  border-color: #cbd5e1;
+  background: #e2e8f0;
 }
 
 .row-actions {
@@ -351,12 +391,15 @@ input:focus {
         </div>
 
         <div class="field">
-          <label for="ghTokenInput">GitHub Fine-grained Token (Device `localStorage`)</label>
-          <input type="password" id="ghTokenInput" placeholder="github_pat_..." autocomplete="off">
+          <div class="field-head">
+            <label for="ghTokenInput">GitHub Fine-grained Token (Device `localStorage`)</label>
+            <button type="button" id="tokenLockBtn" class="lock-toggle-btn locked" onclick="toggleTokenLock()">🔒 ပိတ်ထားသည်</button>
+          </div>
+          <input type="password" id="ghTokenInput" placeholder="github_pat_..." autocomplete="off" readonly>
         </div>
 
         <div class="row-actions">
-          <button class="btn btn-secondary" onclick="saveGhToken()">Save Token</button>
+          <button class="btn btn-secondary" id="saveTokenBtn" onclick="saveGhToken()">Save Token</button>
           <button class="btn btn-tg" id="tgDispatchBtn" onclick="triggerHk2dTelegram()">Telegram ထဲ တင်မယ်</button>
         </div>
         <div id="tgDispatchStatus" class="tg-status"></div>
@@ -506,6 +549,7 @@ input:focus {
     let history2DCache = {};
     let results3DCache = {};
     let toastTimer = null;
+    let isTokenLocked = true;
 
     function showToast(msg) {
       const el = document.getElementById("toast");
@@ -516,6 +560,42 @@ input:focus {
       toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
+    function applyTokenLockState(locked) {
+      isTokenLocked = Boolean(locked);
+      const inp = document.getElementById("ghTokenInput");
+      const lockBtn = document.getElementById("tokenLockBtn");
+      const saveBtn = document.getElementById("saveTokenBtn");
+
+      if (inp) {
+        inp.readOnly = isTokenLocked;
+        inp.disabled = isTokenLocked;
+      }
+      if (saveBtn) {
+        saveBtn.disabled = isTokenLocked;
+      }
+      if (lockBtn) {
+        if (isTokenLocked) {
+          lockBtn.className = "lock-toggle-btn locked";
+          lockBtn.textContent = "🔒 ပိတ်ထားသည်";
+        } else {
+          lockBtn.className = "lock-toggle-btn unlocked";
+          lockBtn.textContent = "🔓 ဖွင့်ထားသည်";
+        }
+      }
+    }
+
+    function toggleTokenLock() {
+      const nextLocked = !isTokenLocked;
+      applyTokenLockState(nextLocked);
+      if (!nextLocked) {
+        const inp = document.getElementById("ghTokenInput");
+        if (inp) inp.focus();
+        showToast("Token ဖွင့်လိုက်ပါပြီ — လဲလို့ရပါပြီ");
+      } else {
+        showToast("Token ပိတ်ထားလိုက်ပါပြီ");
+      }
+    }
+
     function getSavedToken() {
       const inputVal = document.getElementById("ghTokenInput")?.value.trim();
       if (inputVal) return inputVal;
@@ -523,20 +603,31 @@ input:focus {
     }
 
     function saveGhToken() {
+      if (isTokenLocked) {
+        showToast("Token လဲရန် 🔓 ဖွင့်ထားသည် ခလုတ်ကို အရင်နှိပ်ပါ");
+        return;
+      }
       const val = document.getElementById("ghTokenInput")?.value.trim() || "";
       if (!val) {
         localStorage.removeItem(TOKEN_STORAGE_KEY);
+        applyTokenLockState(false);
         showToast("Token ရှင်းပြီးပါပြီ");
         return;
       }
       localStorage.setItem(TOKEN_STORAGE_KEY, val);
-      showToast("Token သိမ်းပြီးပါပြီ");
+      applyTokenLockState(true);
+      showToast("Token သိမ်းပြီး 🔒 ပြန်ပိတ်ထားပါပြီ");
     }
 
     (function initTokenInput() {
       const saved = (localStorage.getItem(TOKEN_STORAGE_KEY) || "").trim();
       const inp = document.getElementById("ghTokenInput");
-      if (inp && saved) inp.value = saved;
+      if (inp && saved) {
+        inp.value = saved;
+        applyTokenLockState(true);
+      } else {
+        applyTokenLockState(false);
+      }
     })();
 
     async function triggerHk2dTelegram() {
