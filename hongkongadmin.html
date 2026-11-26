@@ -148,17 +148,24 @@ body {
 }
 
 input[type="text"],
+input[type="password"],
 input[type="date"] {
   width: 100%;
   padding: 10px 12px;
   border: 1.5px solid #cbd5e1;
   border-radius: 10px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--green);
   background: #f8fafc;
   outline: none;
   text-align: center;
+}
+
+input[type="password"] {
+  font-size: 14px;
+  color: var(--ink);
+  text-align: left;
 }
 
 input[type="date"] {
@@ -343,7 +350,13 @@ input:focus {
           <button class="btn btn-secondary" onclick="clearPreResultsInputs()">Clear Inputs</button>
         </div>
 
+        <div class="field">
+          <label for="ghTokenInput">GitHub Fine-grained Token (Device `localStorage`)</label>
+          <input type="password" id="ghTokenInput" placeholder="github_pat_..." autocomplete="off">
+        </div>
+
         <div class="row-actions">
+          <button class="btn btn-secondary" onclick="saveGhToken()">Save Token</button>
           <button class="btn btn-tg" id="tgDispatchBtn" onclick="triggerHk2dTelegram()">Telegram ထဲ တင်မယ်</button>
         </div>
         <div id="tgDispatchStatus" class="tg-status"></div>
@@ -478,7 +491,7 @@ input:focus {
     const GH_OWNER = "hongkong2doffice";
     const GH_REPO = "Hongkong";
     const GH_WORKFLOW_FILE = "post_hk2d.yml";
-    const GH_TOKEN = "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";
+    const TOKEN_STORAGE_KEY = "hk2d_gh_dispatch_token";
 
     const pad = n => String(n).padStart(2, "0");
     const fmt2 = v => String(v).padStart(2, "0");
@@ -503,9 +516,44 @@ input:focus {
       toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
+    function getSavedToken() {
+      const inputVal = document.getElementById("ghTokenInput")?.value.trim();
+      if (inputVal) return inputVal;
+      return (localStorage.getItem(TOKEN_STORAGE_KEY) || "").trim();
+    }
+
+    function saveGhToken() {
+      const val = document.getElementById("ghTokenInput")?.value.trim() || "";
+      if (!val) {
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
+        showToast("Token ရှင်းပြီးပါပြီ");
+        return;
+      }
+      localStorage.setItem(TOKEN_STORAGE_KEY, val);
+      showToast("Token သိမ်းပြီးပါပြီ");
+    }
+
+    (function initTokenInput() {
+      const saved = (localStorage.getItem(TOKEN_STORAGE_KEY) || "").trim();
+      const inp = document.getElementById("ghTokenInput");
+      if (inp && saved) inp.value = saved;
+    })();
+
     async function triggerHk2dTelegram() {
       const btn = document.getElementById("tgDispatchBtn");
       const status = document.getElementById("tgDispatchStatus");
+      const token = getSavedToken();
+
+      if (!token) {
+        if (status) {
+          status.style.color = "#dc2626";
+          status.textContent = "GitHub Token ထည့်ပြီး Save Token နှိပ်ပါ။";
+        }
+        showToast("Token ထည့်ရန် လိုအပ်ပါသည်");
+        return;
+      }
+
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
 
       if (btn) btn.disabled = true;
       if (status) {
@@ -520,7 +568,7 @@ input:focus {
             method: "POST",
             headers: {
               "Accept": "application/vnd.github+json",
-              "Authorization": `Bearer ${GH_TOKEN}`,
+              "Authorization": `Bearer ${token}`,
               "X-GitHub-Api-Version": "2022-11-28",
               "Content-Type": "application/json"
             },
@@ -629,7 +677,7 @@ input:focus {
 
       for (let d = new Date(startDate); d <= endDate; d.setUTCDate(d.getUTCDate() + 1)) {
         const weekday = d.getUTCDay();
-        if (weekday === 1) continue; // တနင်္လာနေ့ ဖယ်မယ်
+        if (weekday === 1) continue;
 
         const dateStr = `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
         const existing = history2DCache[dateStr] || {};
