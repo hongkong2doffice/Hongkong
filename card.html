@@ -1,293 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HongKong 2D UI Card</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=440, initial-scale=1.0">
+<title>HongKong 2D Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --green: #4aba4c;
+    --page: #e9e8ef;
+    --ink: #25272b;
+    --card: #D1D5DB;
+    --black: #111111;
+  }
+
   * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   body {
-    background: #14171c;
-    min-height: 100vh;
+    width: 440px;
+    background: #ffffff;
+    font-family: 'Roboto', sans-serif;
+    color: var(--ink);
+  }
+
+  #captureCard {
+    width: 440px;
+    background: var(--page);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    padding: 20px;
-  }
-
-  .ui-card {
-    width: 390px;
-    background: #f3f4f6;
-    border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
-    color: #1f2937;
   }
 
-  .top-bar {
-    background: #ffffff;
-    padding: 14px 16px;
+  .header {
+    height: 62px;
+    background: var(--card);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 0 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
   }
 
-  .brand-title {
+  .brand {
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .badge-2d {
     font-size: 18px;
-    font-weight: 700;
-    color: #111827;
+    font-weight: 900;
+    color: #166534;
+  }
+
+  .body-wrap {
+    padding: 14px 12px 14px;
     display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .main-card {
+    width: 100%;
+    min-height: 156px;
+    background: var(--card);
+    border: 1px solid #d6d5dc;
+    border-radius: 14px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.24);
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
-  }
-
-  .mode-badge {
-    font-size: 16px;
-    font-weight: 700;
-    color: #16a34a;
-  }
-
-  .main-result-box {
-    margin: 14px 14px 10px;
-    background: #e5e7eb;
-    border-radius: 10px;
-    padding: 22px 14px 16px;
-    text-align: center;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    justify-content: center;
+    padding: 16px 12px;
+    gap: 8px;
   }
 
   .main-number {
-    font-size: 64px;
-    font-weight: 800;
-    line-height: 1.05;
-    color: #16a34a;
+    font-size: 74px;
+    line-height: 1.02;
+    font-weight: 900;
+    color: var(--green);
     letter-spacing: 2px;
   }
 
-  .update-text {
-    margin-top: 10px;
-    font-size: 12px;
+  .updated {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 15px;
     font-weight: 500;
-    color: #4b5563;
+    color: var(--ink);
+  }
+
+  .update-check {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    width: 20px;
+    height: 20px;
   }
 
-  .check-svg {
-    width: 14px;
-    height: 14px;
-    color: #16a34a;
-    flex-shrink: 0;
+  .update-check svg {
+    width: 100%;
+    height: 100%;
   }
 
-  .slots-grid {
+  .update-check svg path {
+    fill: none;
+    stroke: #32CD32;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .results {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    padding: 6px 14px 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
-  .slot-box {
+  .result-box {
+    height: 74px;
+    background: var(--card);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.18);
+  }
+
+  .result-top {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--black);
+  }
+
+  .line {
+    width: 90%;
+    height: 2px;
     background: #e5e7eb;
-    border-radius: 8px;
-    padding: 10px 8px;
-    text-align: center;
+    margin: 5px 0;
   }
 
-  .slot-time {
-    font-size: 13px;
+  .result-bottom {
+    font-size: 28px;
+    line-height: 1.1;
     font-weight: 700;
-    color: #2563eb;
-    margin-bottom: 4px;
-  }
-
-  .slot-val {
-    font-size: 20px;
-    font-weight: 700;
-    color: #16a34a;
-  }
-
-  .slot-val.pending {
-    color: #2563eb;
+    color: var(--green);
   }
 
   .notices {
+    margin-top: 2px;
     text-align: center;
-    padding: 4px 14px 14px;
-    font-size: 12.5px;
-    font-weight: 600;
     color: #dc2626;
-    line-height: 1.5;
-  }
-
-  .bottom-tabs {
-    background: #ffffff;
-    border-top: 1px solid #e5e7eb;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    padding: 10px 0;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .tab-item {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-  }
-
-  .tab-item.active {
-    color: #dc2626;
-  }
-
-  .tab-item.inactive {
-    color: #6b7280;
-  }
-
-  .controls {
-    width: 390px;
-    background: #1f2937;
-    color: #f9fafb;
-    padding: 14px;
-    border-radius: 12px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    font-size: 13px;
-  }
-
-  .controls label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .controls input {
-    padding: 7px 9px;
-    border-radius: 6px;
-    border: 1px solid #374151;
-    background: #111827;
-    color: #ffffff;
-    font-size: 13px;
-  }
-
-  .controls button {
-    grid-column: span 2;
-    padding: 9px;
-    border: none;
-    border-radius: 7px;
-    background: #16a34a;
-    color: #ffffff;
+    font-size: 15px;
     font-weight: 700;
-    cursor: pointer;
+    line-height: 1.35;
   }
 </style>
 </head>
 <body>
+  <div id="captureCard">
+    <header class="header">
+      <div class="brand">HongKong 2D 🇭🇰</div>
+      <div class="badge-2d">2D</div>
+    </header>
 
-  <div id="captureCard" class="ui-card">
-    <div class="top-bar">
-      <div class="brand-title">HongKong 2D 🇭🇰</div>
-      <div class="mode-badge">2D</div>
-    </div>
+    <div class="body-wrap">
+      <section class="main-card">
+        <div class="main-number" id="mainNumber">40</div>
+        <div class="updated">
+          <span id="updateCheck" class="update-check">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M6 17 L13 24 L27 8"/>
+            </svg>
+          </span>
+          <span id="updateTimeText">Update : 12:39:00 PM 26-11-2026</span>
+        </div>
+      </section>
 
-    <div class="main-result-box">
-      <div id="mainNumber" class="main-number">81</div>
-      <div id="updateTime" class="update-text">
-        <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-        <span id="updateTimeText">Update : 07:00:21 PM 25-11-2026</span>
-      </div>
-    </div>
+      <section class="results" aria-label="Result history">
+        <div class="result-box">
+          <div class="result-top">11:00AM</div>
+          <div class="line"></div>
+          <div class="result-bottom" id="s_1100">40</div>
+        </div>
+        <div class="result-box">
+          <div class="result-top">1:00PM</div>
+          <div class="line"></div>
+          <div class="result-bottom" id="s_1300">??</div>
+        </div>
+        <div class="result-box">
+          <div class="result-top">3:00PM</div>
+          <div class="line"></div>
+          <div class="result-bottom" id="s_1500">??</div>
+        </div>
+        <div class="result-box">
+          <div class="result-top">5:00PM</div>
+          <div class="line"></div>
+          <div class="result-bottom" id="s_1700">??</div>
+        </div>
+        <div class="result-box">
+          <div class="result-top">7:00PM</div>
+          <div class="line"></div>
+          <div class="result-bottom" id="s_1900">??</div>
+        </div>
+        <div class="result-box">
+          <div class="result-top">9:00PM</div>
+          <div class="line"></div>
+          <div class="result-bottom" id="s_2100">??</div>
+        </div>
+      </section>
 
-    <div class="slots-grid">
-      <div class="slot-box">
-        <div class="slot-time">11:00AM</div>
-        <div id="s_1100" class="slot-val">87</div>
+      <div class="notices">
+        <div>Please use VPN to view the result...</div>
+        <div>Every Monday is Closed....</div>
       </div>
-      <div class="slot-box">
-        <div class="slot-time">1:00PM</div>
-        <div id="s_1300" class="slot-val">00</div>
-      </div>
-      <div class="slot-box">
-        <div class="slot-time">3:00PM</div>
-        <div id="s_1500" class="slot-val">84</div>
-      </div>
-      <div class="slot-box">
-        <div class="slot-time">5:00PM</div>
-        <div id="s_1700" class="slot-val">10</div>
-      </div>
-      <div class="slot-box">
-        <div class="slot-time">7:00PM</div>
-        <div id="s_1900" class="slot-val">81</div>
-      </div>
-      <div class="slot-box">
-        <div class="slot-time">9:00PM</div>
-        <div id="s_2100" class="slot-val pending">??</div>
-      </div>
-    </div>
-
-    <div class="notices">
-      <div>Please use VPN to view the result...</div>
-      <div>Every Monday is Closed....</div>
-    </div>
-
-    <div class="bottom-tabs">
-      <div class="tab-item active">📈 2D Live</div>
-      <div class="tab-item inactive">◇ 3D Live</div>
     </div>
   </div>
-
-  <div class="controls">
-    <label>
-      Main 2D Number
-      <input id="inpMain" type="text" maxlength="2" value="81" />
-    </label>
-    <label>
-      7:00PM Slot
-      <input id="inp7pm" type="text" maxlength="2" value="81" />
-    </label>
-    <label>
-      9:00PM Slot
-      <input id="inp9pm" type="text" maxlength="2" value="??" />
-    </label>
-    <label>
-      Update Time Text
-      <input id="inpTime" type="text" value="07:00:21 PM 25-11-2026" />
-    </label>
-    <button onclick="applyCard()">Update Card</button>
-  </div>
-
-<script>
-  function applyCard() {
-    const mainVal = document.getElementById("inpMain").value.trim() || "--";
-    const pm7Val = document.getElementById("inp7pm").value.trim() || "--";
-    const pm9Val = document.getElementById("inp9pm").value.trim() || "??";
-    const timeVal = document.getElementById("inpTime").value.trim();
-
-    document.getElementById("mainNumber").textContent = mainVal;
-    document.getElementById("s_1900").textContent = pm7Val;
-
-    const s2100 = document.getElementById("s_2100");
-    s2100.textContent = pm9Val;
-    s2100.classList.toggle("pending", pm9Val === "??");
-
-    document.getElementById("updateTimeText").textContent = `Update : ${timeVal}`;
-  }
-</script>
 </body>
 </html>
